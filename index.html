@@ -90,10 +90,16 @@
   .fi:last-child{border-bottom:0}
   .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--panel2)}
   .av{width:26px;height:26px;border-radius:50%;background:var(--accent2);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  /* auth */
+  .authwrap{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
+  .authcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:34px 32px;width:340px;max-width:100%;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .authcard h1{font-size:19px;margin:0 0 4px}
+  .authcard p.sub{font-size:13px;margin:0 0 20px}
+  .autherr{color:var(--red);font-size:13px;margin:0 0 12px;display:none}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="app" style="display:none">
   <aside class="side">
     <div class="brand">Agency CRM<small>Contacts · Pipeline · Deals</small></div>
     <a class="nav" data-view="dashboard">Dashboard</a>
@@ -102,9 +108,9 @@
     <a class="nav" data-view="activities">Activities <span class="c" id="c-acts"></span></a>
     <div class="foot">
       <button class="btn sec sm" onclick="exportData()">Export JSON</button>
-      <button class="btn sec sm" onclick="document.getElementById('imp').click()">Import JSON</button>
-      <input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(event)"/>
-      <div id="syncstatus" style="margin-top:8px;font-size:11px;font-weight:600;color:#d97706">● Connecting…</div>
+      <div id="whoami" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+      <button class="btn sec sm" onclick="signOut()">Sign out</button>
+      <div id="syncstatus" style="margin-top:4px;font-size:11px;font-weight:600;color:#d97706">● Connecting…</div>
     </div>
   </aside>
   <main class="main" id="main"></main>
@@ -114,127 +120,122 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.2/dist/umd/supabase.js" integrity="sha384-nD3dwv4+ZqdYnmZKe/249ImlV04om7xTCcsoSeQYI+RO+XlKPoqAWaJR1M5SJH9p" crossorigin="anonymous"></script>
 <script>
-/* Owner roster — sales/ops agents available as deal & activity owners */
-let PEOPLE = ["Company","VP of Sales","Account Strategist","Deal Strategist","Outbound Strategist","Sales Engineer","Sales Coach","Pipeline Analyst","Proposal Strategist","Support Responder","Chief of Staff","CEO","COO"];
-
-const STAGES = [
-  {key:"lead",        label:"Lead",        cls:"grey"},
-  {key:"qualified",   label:"Qualified",   cls:"blue"},
-  {key:"proposal",    label:"Proposal",    cls:"violet"},
-  {key:"negotiation", label:"Negotiation", cls:"amber"},
-  {key:"won",         label:"Won",         cls:"green"},
-  {key:"lost",        label:"Lost",        cls:"red"}
-];
-const ACT_ICON = {call:"📞", email:"✉️", meeting:"🗓️", note:"📝"};
-
-const SEED = {companies:[],people:[],deals:[],activities:[]};
-const KEY = "agency-crm-v1"; // local cache used as offline fallback only
-
 /* ================= SHARED BACKEND (Supabase) =================
-   Same stack/posture as EOS Tracker: one shared Postgres store so the whole
-   board sees one live dataset. In-memory DB is camelCase; mappers translate to
-   snake_case columns. Optimistic in-memory mutate -> background upsert + delete
-   of rows no longer present (last-writer-wins per collection — fine for a small
-   board tool). Falls back to localStorage if the backend is unreachable. */
-const SB_URL = "https://krthbgtykwamxqvapxnx.supabase.co";
-const SB_KEY = "sb_publishable_ToA4drk8mWPKiG6RsxRGyA_GC7iXSqf"; // publishable key only identifies the project; board entry is gated by the shared access code
-const TABLES = { companies:"crm56_companies", people:"crm56_people", deals:"crm56_deals", activities:"crm56_activities" };
-const COLLECTIONS = ["companies","people","deals","activities"];
-let sb = null, ONLINE = false;
-try { sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false } }); } catch(e){ sb = null; }
+   CRM Frontend (OMN-58) bound to the canonical CRM backend (OMN-59) on the
+   Convergence project, schema `public`. Access is gated by **Supabase Auth**
+   (email/password) — the publishable/anon key alone returns nothing because
+   RLS grants CRUD only to the `authenticated` role. This replaces the previous
+   SHA-256 access-code gate + anon-exposed crm56_* prototype tables.
 
-const MAP = {
-  companies:{
-    toRow:o=>({id:o.id,name:o.name,domain:o.domain,industry:o.industry,tags:o.tags||[],notes:o.notes,owner:o.owner,created_at:o.createdAt}),
-    toObj:r=>({id:r.id,name:r.name,domain:r.domain,industry:r.industry,tags:r.tags||[],notes:r.notes,owner:r.owner,createdAt:r.created_at})
-  },
-  people:{
-    toRow:o=>({id:o.id,name:o.name,email:o.email,phone:o.phone,title:o.title,company_id:o.companyId,tags:o.tags||[],custom_fields:o.customFields||[],notes:o.notes,owner:o.owner,created_at:o.createdAt}),
-    toObj:r=>({id:r.id,name:r.name,email:r.email,phone:r.phone,title:r.title,companyId:r.company_id,tags:r.tags||[],customFields:r.custom_fields||[],notes:r.notes,owner:r.owner,createdAt:r.created_at})
-  },
-  deals:{
-    toRow:o=>({id:o.id,title:o.title,company_id:o.companyId,contact_id:o.contactId,value:o.value||0,stage:o.stage,probability:o.probability||0,close_date:o.closeDate,owner:o.owner,notes:o.notes,created_at:o.createdAt}),
-    toObj:r=>({id:r.id,title:r.title,companyId:r.company_id,contactId:r.contact_id,value:+r.value||0,stage:r.stage,probability:r.probability||0,closeDate:r.close_date,owner:r.owner,notes:r.notes,createdAt:r.created_at})
-  },
-  activities:{
-    toRow:o=>({id:o.id,type:o.type,subject:o.subject,notes:o.notes,contact_id:o.contactId,deal_id:o.dealId,owner:o.owner,date:o.date,done:!!o.done,created_at:o.createdAt}),
-    toObj:r=>({id:r.id,type:r.type,subject:r.subject,notes:r.notes,contactId:r.contact_id,dealId:r.deal_id,owner:r.owner,date:r.date,done:!!r.done,createdAt:r.created_at})
-  }
-};
+   Canonical tables:
+     contacts (polymorphic: kind in 'company'|'person', self-FK company_id)
+     pipelines, pipeline_stages (configurable, ordered)
+     deals (stage_id FK; weighted_value is a generated column; trigger inherits
+            stage default probability and syncs status/closed_at on won/lost)
+     activities, notes
+
+   Writes are per-row (insert/update/delete) and re-select the row so generated
+   columns (weighted_value) and trigger-set fields (status/probability) round-trip. */
+const SB_URL = "https://krthbgtykwamxqvapxnx.supabase.co";
+const SB_KEY = "sb_publishable_ToA4drk8mWPKiG6RsxRGyA_GC7iXSqf"; // publishable (anon) key — identifies the project only; RLS requires an authenticated session
+const T = { contacts:"contacts", deals:"deals", activities:"activities", pipelines:"pipelines", stages:"pipeline_stages" };
+let sb = null;
+try { sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } }); } catch(e){ sb = null; }
+
+/* in-memory store (camelCase). companies/people are both rows of `contacts`. */
+let DB = { companies:[], people:[], deals:[], activities:[] };
+let STAGES = [];            // [{id,key,label,position,isWon,isLost,defProb,cls}]
+let PIPELINE_ID = null;     // default pipeline id (deals.pipeline_id is NOT NULL)
+let VIEW = "dashboard";
+let SESSION_EMAIL = "";
+
+const ACT_ICON = {call:"📞", email:"✉️", meeting:"🗓️", note:"📝", task:"✅", other:"•"};
+const STAGE_CLS_BY_POS = ["grey","blue","violet","amber","green","red"];
+
+/* ---------- mappers (canonical row <-> in-memory object) ---------- */
+function companyToObj(r){ return {id:r.id,name:r.name,domain:r.website||"",address:r.address||"",tags:r.tags||[]}; }
+function companyToRow(o){ return {kind:"company",name:o.name,website:o.domain||null,address:o.address||null,tags:o.tags||[],company_id:null}; }
+function personToObj(r){ return {id:r.id,name:r.name,email:r.email||"",phone:r.phone||"",title:r.title||"",companyId:r.company_id||"",tags:r.tags||[]}; }
+function personToRow(o){ return {kind:"person",name:o.name,email:o.email||null,phone:o.phone||null,title:o.title||null,company_id:o.companyId||null,tags:o.tags||[]}; }
+function dealToObj(r){ return {id:r.id,title:r.name,contactId:r.contact_id||"",stageId:r.stage_id||"",value:+r.value||0,probability:Math.round((+r.probability||0)*100),weighted:+r.weighted_value||0,status:r.status,closeDate:r.expected_close_date||""}; }
+function dealToRow(o){ return {name:o.title,pipeline_id:PIPELINE_ID,stage_id:o.stageId||null,contact_id:o.contactId||null,value:+o.value||0,probability:(+o.probability||0)/100,expected_close_date:o.closeDate||null}; }
+function actToObj(r){ return {id:r.id,type:r.type,subject:r.subject||"",notes:r.notes||"",contactId:r.contact_id||"",dealId:r.deal_id||"",date:(r.activity_date||"").slice(0,10)}; }
+function actToRow(o){ return {type:o.type,subject:o.subject||null,notes:o.notes||null,contact_id:o.contactId||null,deal_id:o.dealId||null,activity_date:o.date?o.date:new Date().toISOString()}; }
+
+/* ---------- low-level row ops ---------- */
+async function rowInsert(table,row){ const {data,error}=await sb.from(table).insert(row).select().single(); if(error) throw error; return data; }
+async function rowUpdate(table,id,row){ const {data,error}=await sb.from(table).update(row).eq("id",id).select().single(); if(error) throw error; return data; }
+async function rowDelete(table,id){ const {error}=await sb.from(table).delete().eq("id",id); if(error) throw error; }
 
 function setStatus(txt, ok){ const el=document.getElementById("syncstatus"); if(el){ el.textContent=txt; el.style.color = ok?"#16a34a":"#d97706"; } }
-function localLoad(){ try{ const r=localStorage.getItem(KEY); if(r) return JSON.parse(r);}catch(e){} return JSON.parse(JSON.stringify(SEED)); }
-function localSave(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} }
 
-async function cloudLoad(){
-  if(!sb) throw new Error("supabase client unavailable");
-  const out={};
-  for(const c of COLLECTIONS){
-    const { data, error } = await sb.from(TABLES[c]).select("*");
-    if(error) throw error;
-    out[c]=(data||[]).map(MAP[c].toObj);
-  }
-  return out;
+/* ---------- load everything for the signed-in session ---------- */
+async function loadAll(){
+  const [pl, st, ct, dl, ac] = await Promise.all([
+    sb.from(T.pipelines).select("*").order("is_default",{ascending:false}),
+    sb.from(T.stages).select("*").order("position",{ascending:true}),
+    sb.from(T.contacts).select("*").order("created_at",{ascending:true}),
+    sb.from(T.deals).select("*").order("value",{ascending:false}),
+    sb.from(T.activities).select("*").order("activity_date",{ascending:false})
+  ]);
+  for(const r of [pl,st,ct,dl,ac]) if(r.error) throw r.error;
+  const pipelines = pl.data||[];
+  const def = pipelines.find(p=>p.is_default) || pipelines[0];
+  PIPELINE_ID = def ? def.id : null;
+  STAGES = (st.data||[]).filter(s=>!PIPELINE_ID||s.pipeline_id===PIPELINE_ID)
+    .sort((a,b)=>a.position-b.position)
+    .map((s,i)=>({id:s.id,key:s.id,label:s.name,position:s.position,isWon:s.is_won,isLost:s.is_lost,defProb:+s.default_probability,
+      cls: s.is_won?"green": s.is_lost?"red": (STAGE_CLS_BY_POS[i]||"grey")}));
+  const contacts = ct.data||[];
+  DB.companies = contacts.filter(r=>r.kind==="company").map(companyToObj);
+  DB.people    = contacts.filter(r=>r.kind==="person").map(personToObj);
+  DB.deals     = (dl.data||[]).map(dealToObj);
+  DB.activities= (ac.data||[]).map(actToObj);
 }
-
-let _syncing=false,_resync=false;
-async function cloudSaveAll(){
-  if(!sb){ localSave(); return; }
-  if(_syncing){ _resync=true; return; }
-  _syncing=true; setStatus("● Saving…", true);
-  try{
-    for(const c of COLLECTIONS){
-      const rows=DB[c].map(MAP[c].toRow);
-      if(rows.length){ const { error }=await sb.from(TABLES[c]).upsert(rows); if(error) throw error; }
-      let del=sb.from(TABLES[c]).delete();
-      del = rows.length ? del.not("id","in","("+DB[c].map(x=>'"'+String(x.id).replace(/"/g,'')+'"').join(",")+")")
-                        : del.neq("id","__never__");
-      const { error:e2 }=await del; if(e2) throw e2;
-    }
-    localSave(); ONLINE=true; setStatus("● Live · shared", true);
-  }catch(e){
-    ONLINE=false; setStatus("● Offline · saved locally", false); localSave(); console.error("CRM sync failed:", e);
-  }finally{
-    _syncing=false; if(_resync){ _resync=false; cloudSaveAll(); }
-  }
-}
-function save(){ renderCounts(); cloudSaveAll(); }
-
-let DB = JSON.parse(JSON.stringify(SEED));
-let VIEW = "dashboard";
 
 async function init(){
   setStatus("● Connecting…", true);
-  try{ DB=await cloudLoad(); ONLINE=true; setStatus("● Live · shared", true); localSave(); }
-  catch(e){ DB=localLoad(); ONLINE=false; setStatus("● Offline · local only", false); console.error("CRM cloud load failed:", e); }
+  try{
+    await loadAll();
+    setStatus("● Live · shared", true);
+    document.getElementById("whoami").textContent = "Signed in: "+SESSION_EMAIL;
+  }catch(e){
+    setStatus("● Load failed", false); console.error("CRM load failed:", e);
+    alert("Could not load CRM data: "+(e.message||e));
+  }
   renderCounts(); go("dashboard");
 }
 
 /* ---------- helpers ---------- */
-function uid(p){ return p+"-"+Math.random().toString(36).slice(2,8); }
 function esc(s){ return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function money(n){ n=+n||0; return "$"+n.toLocaleString("en-US"); }
 function moneyK(n){ n=+n||0; return n>=1000 ? "$"+Math.round(n/1000)+"k" : "$"+n; }
-function ownerSelect(name,val){ return `<select name="${name}">`+PEOPLE.map(p=>`<option ${p===val?"selected":""}>${esc(p)}</option>`).join("")+`</select>`; }
 function company(id){ return DB.companies.find(c=>c.id===id); }
 function person(id){ return DB.people.find(p=>p.id===id); }
+function contactAny(id){ return person(id)||company(id); }
 function deal(id){ return DB.deals.find(d=>d.id===id); }
 function companyName(id){ const c=company(id); return c?c.name:"—"; }
 function personName(id){ const p=person(id); return p?p.name:"—"; }
+function contactLabel(id){ const p=person(id); if(p) return p.name+(p.companyId?(" · "+companyName(p.companyId)):""); const c=company(id); return c?c.name:"—"; }
 function dealName(id){ const d=deal(id); return d?d.title:"—"; }
-function stageMeta(k){ return STAGES.find(s=>s.key===k)||STAGES[0]; }
-function stagePill(k){ const s=stageMeta(k); return `<span class="pill ${s.cls}">${s.label}</span>`; }
+function stageMeta(id){ return STAGES.find(s=>s.id===id)||STAGES[0]||{id:"",label:"—",cls:"grey",isWon:false,isLost:false}; }
+function stagePill(id){ const s=stageMeta(id); return `<span class="pill ${s.cls}">${esc(s.label)}</span>`; }
+function isOpen(d){ return d.status!=="won"&&d.status!=="lost"; }
 function initials(n){ return (n||"?").split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase(); }
 function companyOptions(val){ return `<option value="">— none —</option>`+DB.companies.map(c=>`<option value="${c.id}" ${c.id===val?"selected":""}>${esc(c.name)}</option>`).join(""); }
-function contactOptions(val){ return `<option value="">— none —</option>`+DB.people.map(p=>`<option value="${p.id}" ${p.id===val?"selected":""}>${esc(p.name)}${p.companyId?(" · "+esc(companyName(p.companyId))):""}</option>`).join(""); }
+function contactOptions(val){ // people + companies, both valid deal/activity contacts
+  const ppl=DB.people.map(p=>`<option value="${p.id}" ${p.id===val?"selected":""}>${esc(p.name)}${p.companyId?(" · "+esc(companyName(p.companyId))):""}</option>`).join("");
+  const cos=DB.companies.map(c=>`<option value="${c.id}" ${c.id===val?"selected":""}>${esc(c.name)} (company)</option>`).join("");
+  return `<option value="">— none —</option>`+ppl+cos;
+}
 function dealOptions(val){ return `<option value="">— none —</option>`+DB.deals.map(d=>`<option value="${d.id}" ${d.id===val?"selected":""}>${esc(d.title)}</option>`).join(""); }
+function stageOptions(val){ return STAGES.map(s=>`<option value="${s.id}" ${s.id===val?"selected":""}>${esc(s.label)}</option>`).join(""); }
 function tagsHtml(arr){ return (arr||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join(""); }
 
 function renderCounts(){
-  const open=DB.deals.filter(d=>d.stage!=="won"&&d.stage!=="lost").length;
   document.getElementById("c-contacts").textContent=DB.people.length;
-  document.getElementById("c-deals").textContent=open;
-  document.getElementById("c-acts").textContent=DB.activities.filter(a=>!a.done).length;
+  document.getElementById("c-deals").textContent=DB.deals.filter(isOpen).length;
+  document.getElementById("c-acts").textContent=DB.activities.length;
 }
 
 /* ---------- modal / nav ---------- */
@@ -244,31 +245,29 @@ document.getElementById("modal-bg").addEventListener("click",e=>{ if(e.target.id
 function go(v){ VIEW=v; document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v)); render(); }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>go(n.dataset.view)));
 
+/* error helper: on a failed write, reload from cloud to stay consistent */
+async function failAndReload(e){ console.error("CRM write failed:", e); alert("Save failed: "+(e.message||e)+"\nReloading latest data."); try{ await loadAll(); }catch(_){} renderCounts(); render(); }
+
 /* ================= DASHBOARD ================= */
 function viewDashboard(){
-  const open=DB.deals.filter(d=>d.stage!=="won"&&d.stage!=="lost");
-  const won=DB.deals.filter(d=>d.stage==="won");
+  const open=DB.deals.filter(isOpen);
+  const won=DB.deals.filter(d=>d.status==="won");
   const openVal=open.reduce((s,d)=>s+(+d.value||0),0);
   const wonVal=won.reduce((s,d)=>s+(+d.value||0),0);
-  const weighted=open.reduce((s,d)=>s+(+d.value||0)*(d.probability||0)/100,0);
-  // pipeline by stage
-  const byStage=STAGES.filter(s=>s.key!=="won"&&s.key!=="lost").map(s=>{
-    const ds=DB.deals.filter(d=>d.stage===s.key); const v=ds.reduce((a,d)=>a+(+d.value||0),0);
+  const weighted=open.reduce((s,d)=>s+(+d.weighted||0),0);
+  const byStage=STAGES.filter(s=>!s.isWon&&!s.isLost).map(s=>{
+    const ds=DB.deals.filter(d=>d.stageId===s.id); const v=ds.reduce((a,d)=>a+(+d.value||0),0);
     return {s, n:ds.length, v};
   });
   const maxV=Math.max(...byStage.map(x=>x.v),1);
-  // leaderboard
-  const board={};
-  DB.deals.forEach(d=>{ const o=d.owner||"—"; board[o]=board[o]||{owner:o,won:0,wonVal:0,open:0,openVal:0}; if(d.stage==="won"){board[o].won++;board[o].wonVal+=+d.value||0;} else if(d.stage!=="lost"){board[o].open++;board[o].openVal+=+d.value||0;} });
-  const lead=Object.values(board).sort((a,b)=>b.wonVal-a.wonVal||b.openVal-a.openVal).slice(0,6);
-  // activity feed
+  const topOpen=[...open].sort((a,b)=>(+b.value||0)-(+a.value||0)).slice(0,6);
   const feed=[...DB.activities].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
   return `
   <h1>Dashboard</h1>
   <p class="sub">Sales pipeline health — ${new Date().toISOString().slice(0,10)}</p>
   <div class="grid cards">
     <div class="card"><h3>Open pipeline</h3><div class="big">${moneyK(openVal)}</div><div class="meta">${open.length} open deals</div></div>
-    <div class="card"><h3>Weighted forecast</h3><div class="big">${moneyK(weighted)}</div><div class="meta">by probability</div></div>
+    <div class="card"><h3>Weighted forecast</h3><div class="big">${moneyK(weighted)}</div><div class="meta">value × probability</div></div>
     <div class="card"><h3>Won (total)</h3><div class="big">${moneyK(wonVal)}</div><div class="meta">${won.length} closed-won</div></div>
     <div class="card"><h3>Contacts</h3><div class="big">${DB.people.length}</div><div class="meta">${DB.companies.length} companies</div></div>
   </div>
@@ -276,17 +275,17 @@ function viewDashboard(){
     <div>
       <div class="between"><h3 style="margin:0">Pipeline by stage</h3><a class="nav" style="display:inline;padding:4px 8px" onclick="go('pipeline')">Open pipeline →</a></div>
       <table><thead><tr><th>Stage</th><th class="num">Deals</th><th>Value</th></tr></thead><tbody>
-      ${byStage.map(x=>`<tr><td>${stagePill(x.s.key)}</td><td class="num">${x.n}</td><td><div class="row"><div class="bar" style="flex:1"><i style="width:${x.v/maxV*100}%"></i></div><span class="num" style="min-width:54px">${moneyK(x.v)}</span></div></td></tr>`).join("")}
+      ${byStage.map(x=>`<tr><td>${stagePill(x.s.id)}</td><td class="num">${x.n}</td><td><div class="row"><div class="bar" style="flex:1"><i style="width:${x.v/maxV*100}%"></i></div><span class="num" style="min-width:54px">${moneyK(x.v)}</span></div></td></tr>`).join("")}
       </tbody></table>
-      <div class="between" style="margin-top:20px"><h3 style="margin:0">Team leaderboard</h3></div>
-      <table><thead><tr><th>Owner</th><th class="num">Won</th><th class="num">Won $</th><th class="num">Open $</th></tr></thead><tbody>
-      ${lead.map(x=>`<tr><td><div class="row"><span class="av">${esc(initials(x.owner))}</span> ${esc(x.owner)}</div></td><td class="num">${x.won}</td><td class="num cell">${moneyK(x.wonVal)}</td><td class="num muted">${moneyK(x.openVal)}</td></tr>`).join("")||'<tr><td colspan=4 class=muted>No deals</td></tr>'}
+      <div class="between" style="margin-top:20px"><h3 style="margin:0">Top open deals</h3></div>
+      <table><thead><tr><th>Deal</th><th>Stage</th><th class="num">Value</th><th class="num">Weighted</th></tr></thead><tbody>
+      ${topOpen.map(d=>`<tr><td><b>${esc(d.title)}</b><div class="muted" style="font-size:12px">${esc(contactLabel(d.contactId))}</div></td><td>${stagePill(d.stageId)}</td><td class="num">${moneyK(d.value)}</td><td class="num muted">${moneyK(d.weighted)}</td></tr>`).join("")||'<tr><td colspan=4 class=muted>No open deals</td></tr>'}
       </tbody></table>
     </div>
     <div>
       <div class="between"><h3 style="margin:0">Activity feed</h3><a class="nav" style="display:inline;padding:4px 8px" onclick="go('activities')">All →</a></div>
       <div class="card"><div class="feed">
-      ${feed.map(a=>`<div class="fi"><div class="ico">${ACT_ICON[a.type]||"•"}</div><div style="flex:1"><div style="font-weight:600">${esc(a.subject)}</div><div class="muted" style="font-size:12px">${esc(a.date||"")} · ${esc(a.owner||"")}${a.contactId?(" · "+esc(personName(a.contactId))):""}</div></div></div>`).join("")||'<div class="muted">No activity yet</div>'}
+      ${feed.map(a=>`<div class="fi"><div class="ico">${ACT_ICON[a.type]||"•"}</div><div style="flex:1"><div style="font-weight:600">${esc(a.subject)}</div><div class="muted" style="font-size:12px">${esc(a.date||"")}${a.contactId?(" · "+esc(contactLabel(a.contactId))):""}</div></div></div>`).join("")||'<div class="muted">No activity yet</div>'}
       </div></div>
     </div>
   </div>`;
@@ -307,38 +306,34 @@ function viewContacts(){
       <td>${esc(companyName(p.companyId))}</td>
       <td class="muted">${esc(p.email||"")}<div style="font-size:12px">${esc(p.phone||"")}</div></td>
       <td>${tagsHtml(p.tags)}</td>
-      <td class="muted">${esc(p.owner||"")}</td>
       <td><button class="iconbtn" onclick="editPerson('${p.id}')">Edit</button><button class="iconbtn" onclick="delItem('people','${p.id}')">✕</button></td>
     </tr>`).join("");
-    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · custom fields · tags · notes</p></div>
+    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · tags</p></div>
       <div class="row">${search}${seg}<button class="btn" onclick="editPerson()">+ New Person</button></div></div>
-      <table><thead><tr><th>Name</th><th>Company</th><th>Contact</th><th>Tags</th><th>Owner</th><th></th></tr></thead>
-      <tbody>${rows||'<tr><td colspan=6 class=empty>No people yet — add one.</td></tr>'}</tbody></table>`;
+      <table><thead><tr><th>Name</th><th>Company</th><th>Contact</th><th>Tags</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan=5 class=empty>No people yet — add one.</td></tr>'}</tbody></table>`;
   } else {
     const q=contactQ.toLowerCase();
-    const list=DB.companies.filter(c=>!q||[c.name,c.industry,c.domain,(c.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
+    const list=DB.companies.filter(c=>!q||[c.name,c.domain,c.address,(c.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
     const rows=list.map(c=>{
       const ppl=DB.people.filter(p=>p.companyId===c.id).length;
-      const dv=DB.deals.filter(d=>d.companyId===c.id&&d.stage!=="lost").reduce((s,d)=>s+(+d.value||0),0);
+      const dv=DB.deals.filter(d=>{const ct=d.contactId; const pc=person(ct); return ct===c.id||(pc&&pc.companyId===c.id);}).filter(d=>d.status!=="lost").reduce((s,d)=>s+(+d.value||0),0);
       return `<tr>
       <td><b>${esc(c.name)}</b><div class="muted" style="font-size:12px">${esc(c.domain||"")}</div></td>
-      <td>${esc(c.industry||"")}</td>
+      <td class="muted">${esc(c.address||"")}</td>
       <td class="num">${ppl}</td>
       <td class="num">${moneyK(dv)}</td>
       <td>${tagsHtml(c.tags)}</td>
       <td><button class="iconbtn" onclick="editCompany('${c.id}')">Edit</button><button class="iconbtn" onclick="delItem('companies','${c.id}')">✕</button></td>
     </tr>`;}).join("");
-    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · custom fields · tags · notes</p></div>
+    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · tags</p></div>
       <div class="row">${search}${seg}<button class="btn" onclick="editCompany()">+ New Company</button></div></div>
-      <table><thead><tr><th>Company</th><th>Industry</th><th class="num">People</th><th class="num">Pipeline</th><th>Tags</th><th></th></tr></thead>
+      <table><thead><tr><th>Company</th><th>Address</th><th class="num">People</th><th class="num">Pipeline</th><th>Tags</th><th></th></tr></thead>
       <tbody>${rows||'<tr><td colspan=6 class=empty>No companies yet — add one.</td></tr>'}</tbody></table>`;
   }
 }
-function cfRow(cf){ return `<div class="ms-row"><input type=text class="cfk" value="${esc(cf.k||"")}" placeholder="field"><input type=text class="cfv" value="${esc(cf.v||"")}" placeholder="value"><button type=button class="iconbtn" onclick="this.parentNode.remove()">✕</button></div>`; }
-function addCf(){ const w=document.getElementById("cf-wrap"); const d=document.createElement("div"); d.innerHTML=cfRow({}); w.appendChild(d.firstChild); }
 function editPerson(id){
-  const p=id?person(id):{name:"",email:"",phone:"",title:"",companyId:"",tags:[],customFields:[],notes:"",owner:"VP of Sales"};
-  const cf=(p.customFields||[]).map(cfRow).join("");
+  const p=id?person(id):{name:"",email:"",phone:"",title:"",companyId:"",tags:[]};
   openModal(`<h2>${id?"Edit":"New"} Person</h2><form onsubmit="savePerson(event,'${id||""}')">
     <div class="fgrid">
       <div><label>Name</label><input name="name" required value="${esc(p.name)}"></div>
@@ -346,78 +341,80 @@ function editPerson(id){
       <div><label>Email</label><input name="email" type="email" value="${esc(p.email)}"></div>
       <div><label>Phone</label><input name="phone" value="${esc(p.phone)}"></div>
       <div><label>Company</label><select name="companyId">${companyOptions(p.companyId)}</select></div>
-      <div><label>Owner</label>${ownerSelect("owner",p.owner)}</div>
       <div class="full"><label>Tags (comma separated)</label><input name="tags" value="${esc((p.tags||[]).join(", "))}"></div>
-      <div class="full"><label>Custom fields</label><div id="cf-wrap">${cf}</div><button type="button" class="btn sec sm" onclick="addCf()">+ field</button></div>
-      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(p.notes)}</textarea></div>
     </div>
     <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
   </form>`);
 }
-function savePerson(e,id){ e.preventDefault(); const f=e.target;
+async function savePerson(e,id){ e.preventDefault(); const f=e.target;
   const tags=f.tags.value.split(",").map(s=>s.trim()).filter(Boolean);
-  const customFields=[...f.querySelectorAll("#cf-wrap .ms-row")].map(r=>({k:r.querySelector(".cfk").value.trim(),v:r.querySelector(".cfv").value.trim()})).filter(c=>c.k);
-  const obj={name:f.name.value,title:f.title.value,email:f.email.value,phone:f.phone.value,companyId:f.companyId.value,owner:f.owner.value,tags,customFields,notes:f.notes.value};
-  if(id){ Object.assign(person(id),obj);} else { obj.id=uid("pe"); obj.createdAt=new Date().toISOString().slice(0,10); DB.people.push(obj);} save(); closeModal(); render();
+  const obj={name:f.name.value,title:f.title.value,email:f.email.value,phone:f.phone.value,companyId:f.companyId.value,tags};
+  closeModal();
+  try{
+    if(id){ const r=await rowUpdate(T.contacts,id,personToRow(obj)); Object.assign(person(id),personToObj(r)); }
+    else { const r=await rowInsert(T.contacts,personToRow(obj)); DB.people.push(personToObj(r)); }
+    renderCounts(); render();
+  }catch(err){ failAndReload(err); }
 }
 function editCompany(id){
-  const c=id?company(id):{name:"",domain:"",industry:"",tags:[],notes:"",owner:"VP of Sales"};
+  const c=id?company(id):{name:"",domain:"",address:"",tags:[]};
   openModal(`<h2>${id?"Edit":"New"} Company</h2><form onsubmit="saveCompany(event,'${id||""}')">
     <div class="fgrid">
       <div><label>Name</label><input name="name" required value="${esc(c.name)}"></div>
-      <div><label>Domain</label><input name="domain" value="${esc(c.domain)}"></div>
-      <div><label>Industry</label><input name="industry" value="${esc(c.industry)}"></div>
-      <div><label>Owner</label>${ownerSelect("owner",c.owner)}</div>
+      <div><label>Website</label><input name="domain" value="${esc(c.domain)}"></div>
+      <div class="full"><label>Address</label><input name="address" value="${esc(c.address)}"></div>
       <div class="full"><label>Tags (comma separated)</label><input name="tags" value="${esc((c.tags||[]).join(", "))}"></div>
-      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(c.notes)}</textarea></div>
     </div>
     <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
   </form>`);
 }
-function saveCompany(e,id){ e.preventDefault(); const f=e.target;
+async function saveCompany(e,id){ e.preventDefault(); const f=e.target;
   const tags=f.tags.value.split(",").map(s=>s.trim()).filter(Boolean);
-  const obj={name:f.name.value,domain:f.domain.value,industry:f.industry.value,owner:f.owner.value,tags,notes:f.notes.value};
-  if(id){ Object.assign(company(id),obj);} else { obj.id=uid("co"); obj.createdAt=new Date().toISOString().slice(0,10); DB.companies.push(obj);} save(); closeModal(); render();
+  const obj={name:f.name.value,domain:f.domain.value,address:f.address.value,tags};
+  closeModal();
+  try{
+    if(id){ const r=await rowUpdate(T.contacts,id,companyToRow(obj)); Object.assign(company(id),companyToObj(r)); }
+    else { const r=await rowInsert(T.contacts,companyToRow(obj)); DB.companies.push(companyToObj(r)); }
+    renderCounts(); render();
+  }catch(err){ failAndReload(err); }
 }
 
 /* ================= PIPELINE / DEALS ================= */
-let pipeView="kanban", pipOwner="all";
+let pipView="kanban";
 function viewPipeline(){
-  const owners=["all",...Array.from(new Set(DB.deals.map(d=>d.owner).filter(Boolean)))];
-  const ownerSeg=`<select style="width:auto" onchange="pipOwner=this.value;render()">${owners.map(o=>`<option value="${esc(o)}" ${o===pipOwner?"selected":""}>${o==="all"?"All owners":esc(o)}</option>`).join("")}</select>`;
   const seg=`<div class="seg">
     <button class="${pipView==='kanban'?'on':''}" onclick="pipView='kanban';render()">Kanban</button>
     <button class="${pipView==='list'?'on':''}" onclick="pipView='list';render()">List</button></div>`;
   const head=`<div class="between"><div><h1>Pipeline</h1><p class="sub" style="margin:0">Deals &amp; opportunities · drag cards to change stage</p></div>
-    <div class="row">${ownerSeg}${seg}<button class="btn" onclick="editDeal()">+ New Deal</button></div></div>`;
-  const ds=DB.deals.filter(d=>pipOwner==="all"||d.owner===pipOwner);
+    <div class="row">${seg}<button class="btn" onclick="editDeal()">+ New Deal</button></div></div>`;
+  const ds=DB.deals;
   if(pipView==="kanban"){
     const cols=STAGES.map(s=>{
-      const items=ds.filter(d=>d.stage===s.key);
+      const items=ds.filter(d=>d.stageId===s.id);
       const v=items.reduce((a,d)=>a+(+d.value||0),0);
       const cards=items.map(d=>`<div class="deal" draggable="true" ondragstart="dragDeal(event,'${d.id}')" onclick="editDeal('${d.id}')">
         <div class="t">${esc(d.title)}</div>
-        <div class="m">${esc(companyName(d.companyId))}${d.contactId?(" · "+esc(personName(d.contactId))):""}</div>
+        <div class="m">${esc(contactLabel(d.contactId))}</div>
         <div class="row" style="justify-content:space-between;margin-top:6px"><span class="v">${moneyK(d.value)}</span><span class="tag">${d.probability||0}%</span></div>
-        <div class="m" style="margin-top:5px">${esc(d.owner||"")} · ${esc(d.closeDate||"no date")}</div>
+        <div class="m" style="margin-top:5px">${esc(d.closeDate||"no date")}</div>
       </div>`).join("");
-      return `<div class="col"><div class="col-h"><span>${s.label} <span class="muted">(${items.length})</span></span><span class="sum">${moneyK(v)}</span></div>
-        <div class="col-b" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropDeal(event,'${s.key}')">${cards||'<div class="muted" style="font-size:12px;padding:6px">—</div>'}</div></div>`;
+      return `<div class="col"><div class="col-h"><span>${esc(s.label)} <span class="muted">(${items.length})</span></span><span class="sum">${moneyK(v)}</span></div>
+        <div class="col-b" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropDeal(event,'${s.id}')">${cards||'<div class="muted" style="font-size:12px;padding:6px">—</div>'}</div></div>`;
     }).join("");
     return head+`<div class="kanban">${cols}</div>`;
   } else {
-    const order={lead:0,qualified:1,proposal:2,negotiation:3,won:4,lost:5};
-    const list=[...ds].sort((a,b)=>(order[a.stage]??0)-(order[b.stage]??0)||(+b.value||0)-(+a.value||0));
+    const pos={}; STAGES.forEach(s=>pos[s.id]=s.position);
+    const list=[...ds].sort((a,b)=>(pos[a.stageId]??0)-(pos[b.stageId]??0)||(+b.value||0)-(+a.value||0));
     const rows=list.map(d=>`<tr>
-      <td><b>${esc(d.title)}</b><div class="muted" style="font-size:12px">${esc(companyName(d.companyId))}${d.contactId?(" · "+esc(personName(d.contactId))):""}</div></td>
-      <td>${stagePill(d.stage)}</td>
+      <td><b>${esc(d.title)}</b><div class="muted" style="font-size:12px">${esc(contactLabel(d.contactId))}</div></td>
+      <td>${stagePill(d.stageId)}</td>
       <td class="num">${money(d.value)}</td>
       <td class="num">${d.probability||0}%</td>
+      <td class="num muted">${moneyK(d.weighted)}</td>
       <td class="muted">${esc(d.closeDate||"")}</td>
-      <td class="muted">${esc(d.owner||"")}</td>
       <td><button class="iconbtn" onclick="editDeal('${d.id}')">Edit</button><button class="iconbtn" onclick="delItem('deals','${d.id}')">✕</button></td>
     </tr>`).join("");
-    return head+`<table><thead><tr><th>Deal</th><th>Stage</th><th class="num">Value</th><th class="num">Prob.</th><th>Close</th><th>Owner</th><th></th></tr></thead>
+    return head+`<table><thead><tr><th>Deal</th><th>Stage</th><th class="num">Value</th><th class="num">Prob.</th><th class="num">Weighted</th><th>Close</th><th></th></tr></thead>
       <tbody>${rows||'<tr><td colspan=7 class=empty>No deals yet — add one.</td></tr>'}</tbody></table>`;
   }
 }
@@ -425,20 +422,22 @@ let _dragId=null;
 function dragDeal(e,id){ _dragId=id; e.dataTransfer.effectAllowed="move"; }
 function dragOver(e){ e.preventDefault(); e.currentTarget.classList.add("drag"); }
 function dragLeave(e){ e.currentTarget.classList.remove("drag"); }
-function dropDeal(e,stage){ e.preventDefault(); e.currentTarget.classList.remove("drag"); if(!_dragId) return; const d=deal(_dragId); if(d&&d.stage!==stage){ d.stage=stage; if(stage==="won")d.probability=100; if(stage==="lost")d.probability=0; save(); } _dragId=null; render(); }
+async function dropDeal(e,stageId){ e.preventDefault(); e.currentTarget.classList.remove("drag"); const id=_dragId; _dragId=null; if(!id) return; const d=deal(id); if(!d||d.stageId===stageId) return;
+  const prev=d.stageId; d.stageId=stageId; render();
+  try{ const r=await rowUpdate(T.deals,id,{stage_id:stageId}); Object.assign(d,dealToObj(r)); renderCounts(); render(); }
+  catch(err){ d.stageId=prev; failAndReload(err); }
+}
 function editDeal(id){
-  const d=id?deal(id):{title:"",companyId:"",contactId:"",value:0,stage:"lead",probability:20,closeDate:"",owner:"VP of Sales",notes:""};
+  const firstOpen=(STAGES.find(s=>!s.isWon&&!s.isLost)||STAGES[0]||{}).id||"";
+  const d=id?deal(id):{title:"",contactId:"",value:0,stageId:firstOpen,probability:"",closeDate:""};
   openModal(`<h2>${id?"Edit":"New"} Deal</h2><form onsubmit="saveDeal(event,'${id||""}')">
     <div class="fgrid">
       <div class="full"><label>Title</label><input name="title" required value="${esc(d.title)}"></div>
-      <div><label>Company</label><select name="companyId">${companyOptions(d.companyId)}</select></div>
-      <div><label>Primary contact</label><select name="contactId">${contactOptions(d.contactId)}</select></div>
+      <div class="full"><label>Contact (person or company)</label><select name="contactId">${contactOptions(d.contactId)}</select></div>
       <div><label>Value ($)</label><input name="value" type="number" min="0" step="any" value="${d.value||0}"></div>
-      <div><label>Stage</label><select name="stage">${STAGES.map(s=>`<option value="${s.key}" ${s.key===d.stage?"selected":""}>${s.label}</option>`).join("")}</select></div>
-      <div><label>Probability (%)</label><input name="probability" type="number" min="0" max="100" value="${d.probability||0}"></div>
+      <div><label>Stage</label><select name="stageId">${stageOptions(d.stageId)}</select></div>
+      <div><label>Probability (%) <span class="muted" style="font-weight:400">— blank = stage default</span></label><input name="probability" type="number" min="0" max="100" value="${d.probability===""||d.probability==null?"":d.probability}"></div>
       <div><label>Close date</label><input name="closeDate" type="date" value="${esc(d.closeDate)}"></div>
-      <div><label>Owner</label>${ownerSelect("owner",d.owner)}</div>
-      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(d.notes)}</textarea></div>
     </div>
     <div class="row" style="justify-content:space-between">
       <div>${id?`<button type="button" class="btn sec sm" onclick="logForDeal('${id}')">+ Log activity</button>`:""}</div>
@@ -446,60 +445,74 @@ function editDeal(id){
     </div>
   </form>`);
 }
-function saveDeal(e,id){ e.preventDefault(); const f=e.target;
-  const obj={title:f.title.value,companyId:f.companyId.value,contactId:f.contactId.value,value:+f.value.value||0,stage:f.stage.value,probability:+f.probability.value||0,closeDate:f.closeDate.value,owner:f.owner.value,notes:f.notes.value};
-  if(id){ Object.assign(deal(id),obj);} else { obj.id=uid("de"); obj.createdAt=new Date().toISOString().slice(0,10); DB.deals.push(obj);} save(); closeModal(); render();
+async function saveDeal(e,id){ e.preventDefault(); const f=e.target;
+  const probRaw=f.probability.value.trim();
+  const obj={title:f.title.value,contactId:f.contactId.value,value:+f.value.value||0,stageId:f.stageId.value,probability:probRaw===""?null:(+probRaw||0),closeDate:f.closeDate.value};
+  const row=dealToRow(obj);
+  if(probRaw==="") delete row.probability; // let stage-default trigger fill it
+  closeModal();
+  try{
+    if(id){ const r=await rowUpdate(T.deals,id,row); Object.assign(deal(id),dealToObj(r)); }
+    else { const r=await rowInsert(T.deals,row); DB.deals.push(dealToObj(r)); }
+    renderCounts(); render();
+  }catch(err){ failAndReload(err); }
 }
-function logForDeal(dealId){ const d=deal(dealId); closeModal(); editActivity(null,{dealId,contactId:d?d.contactId:"",owner:d?d.owner:"VP of Sales"}); }
+function logForDeal(dealId){ const d=deal(dealId); closeModal(); editActivity(null,{dealId,contactId:d?d.contactId:""}); }
 
 /* ================= ACTIVITIES ================= */
 let actFilter="all";
 function viewActivities(){
   const seg=`<div class="seg">
-    ${["all","call","email","meeting","note","open"].map(k=>`<button class="${actFilter===k?'on':''}" onclick="actFilter='${k}';render()">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div>`;
+    ${["all","call","email","meeting","note"].map(k=>`<button class="${actFilter===k?'on':''}" onclick="actFilter='${k}';render()">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div>`;
   let list=[...DB.activities];
-  if(actFilter==="open") list=list.filter(a=>!a.done); else if(actFilter!=="all") list=list.filter(a=>a.type===actFilter);
+  if(actFilter!=="all") list=list.filter(a=>a.type===actFilter);
   list.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const rows=list.map(a=>`<tr>
-    <td><input type=checkbox ${a.done?"checked":""} onchange="toggleAct('${a.id}')"></td>
     <td><span class="tag">${ACT_ICON[a.type]||""} ${esc(a.type)}</span></td>
-    <td class="${a.done?'done-txt':''}"><b>${esc(a.subject)}</b>${a.notes?`<div class="muted" style="font-size:12px">${esc(a.notes)}</div>`:""}</td>
-    <td class="muted">${a.contactId?esc(personName(a.contactId)):""}${a.dealId?`<div style="font-size:12px">${esc(dealName(a.dealId))}</div>`:""}</td>
-    <td class="muted">${esc(a.owner||"")}</td>
+    <td><b>${esc(a.subject)}</b>${a.notes?`<div class="muted" style="font-size:12px">${esc(a.notes)}</div>`:""}</td>
+    <td class="muted">${a.contactId?esc(contactLabel(a.contactId)):""}${a.dealId?`<div style="font-size:12px">${esc(dealName(a.dealId))}</div>`:""}</td>
     <td class="muted">${esc(a.date||"")}</td>
     <td><button class="iconbtn" onclick="editActivity('${a.id}')">Edit</button><button class="iconbtn" onclick="delItem('activities','${a.id}')">✕</button></td>
   </tr>`).join("");
   return `<div class="between"><div><h1>Activities</h1><p class="sub" style="margin:0">Calls · emails · meetings · notes logged against contacts &amp; deals</p></div>
     <div class="row">${seg}<button class="btn" onclick="editActivity()">+ Log Activity</button></div></div>
-    <table><thead><tr><th></th><th>Type</th><th>Subject</th><th>Linked to</th><th>Owner</th><th>Date</th><th></th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=7 class=empty>No activities yet — log one.</td></tr>'}</tbody></table>`;
+    <table><thead><tr><th>Type</th><th>Subject</th><th>Linked to</th><th>Date</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=5 class=empty>No activities yet — log one.</td></tr>'}</tbody></table>`;
 }
 function editActivity(id,pre){
-  const a=id?DB.activities.find(x=>x.id===id):Object.assign({type:"call",subject:"",notes:"",contactId:"",dealId:"",owner:"VP of Sales",date:new Date().toISOString().slice(0,10),done:false},pre||{});
+  const a=id?DB.activities.find(x=>x.id===id):Object.assign({type:"call",subject:"",notes:"",contactId:"",dealId:"",date:new Date().toISOString().slice(0,10)},pre||{});
   openModal(`<h2>${id?"Edit":"Log"} Activity</h2><form onsubmit="saveActivity(event,'${id||""}')">
     <div class="fgrid">
-      <div><label>Type</label><select name="type">${["call","email","meeting","note"].map(t=>`<option value="${t}" ${t===a.type?"selected":""}>${ACT_ICON[t]} ${t}</option>`).join("")}</select></div>
+      <div><label>Type</label><select name="type">${["call","email","meeting","note","task"].map(t=>`<option value="${t}" ${t===a.type?"selected":""}>${ACT_ICON[t]||""} ${t}</option>`).join("")}</select></div>
       <div><label>Date</label><input name="date" type="date" value="${esc(a.date)}"></div>
       <div class="full"><label>Subject</label><input name="subject" required value="${esc(a.subject)}"></div>
       <div><label>Contact</label><select name="contactId">${contactOptions(a.contactId)}</select></div>
       <div><label>Deal</label><select name="dealId">${dealOptions(a.dealId)}</select></div>
-      <div><label>Owner</label>${ownerSelect("owner",a.owner)}</div>
-      <div><label>Status</label><select name="done"><option value="false" ${!a.done?"selected":""}>Open / to-do</option><option value="true" ${a.done?"selected":""}>Done</option></select></div>
       <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(a.notes)}</textarea></div>
     </div>
     <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
   </form>`);
 }
-function saveActivity(e,id){ e.preventDefault(); const f=e.target;
-  const obj={type:f.type.value,subject:f.subject.value,notes:f.notes.value,contactId:f.contactId.value,dealId:f.dealId.value,owner:f.owner.value,date:f.date.value,done:f.done.value==="true"};
-  if(id){ Object.assign(DB.activities.find(x=>x.id===id),obj);} else { obj.id=uid("ac"); obj.createdAt=new Date().toISOString().slice(0,10); DB.activities.push(obj);} save(); closeModal(); render();
+async function saveActivity(e,id){ e.preventDefault(); const f=e.target;
+  const obj={type:f.type.value,subject:f.subject.value,notes:f.notes.value,contactId:f.contactId.value,dealId:f.dealId.value,date:f.date.value};
+  if(!obj.contactId && !obj.dealId){ alert("Link the activity to a contact or a deal."); return; }
+  closeModal();
+  try{
+    if(id){ const r=await rowUpdate(T.activities,id,actToRow(obj)); Object.assign(DB.activities.find(x=>x.id===id),actToObj(r)); }
+    else { const r=await rowInsert(T.activities,actToRow(obj)); DB.activities.push(actToObj(r)); }
+    renderCounts(); render();
+  }catch(err){ failAndReload(err); }
 }
-function toggleAct(id){ const a=DB.activities.find(x=>x.id===id); a.done=!a.done; save(); render(); }
 
 /* ---------- shared ---------- */
-function delItem(coll,id){ if(!confirm("Delete this item?")) return; DB[coll]=DB[coll].filter(x=>x.id!==id); save(); render(); }
+const COLL_TABLE={companies:T.contacts,people:T.contacts,deals:T.deals,activities:T.activities};
+async function delItem(coll,id){ if(!confirm("Delete this item?")) return;
+  try{ await rowDelete(COLL_TABLE[coll],id); DB[coll]=DB[coll].filter(x=>x.id!==id);
+    if(coll==="companies"||coll==="people"||coll==="deals"){ try{ await loadAll(); }catch(_){} } // refresh cascades/links
+    renderCounts(); render();
+  }catch(err){ failAndReload(err); }
+}
 function exportData(){ const b=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="agency-crm-data.json"; a.click(); }
-function importData(e){ const fr=new FileReader(); fr.onload=()=>{ try{ DB=JSON.parse(fr.result); save(); render(); alert("Imported."); }catch(err){ alert("Invalid JSON"); } }; fr.readAsText(e.target.files[0]); }
 
 /* ---------- render ---------- */
 function render(){
@@ -507,29 +520,49 @@ function render(){
   m.innerHTML = VIEW==="dashboard"?viewDashboard(): VIEW==="contacts"?viewContacts(): VIEW==="pipeline"?viewPipeline(): viewActivities();
 }
 
-/* ---------- board access gate (shared code, same pattern as EOS Tracker) ---------- */
-const _GATE_HASH = "9729c795ccedc0313505c4b4312d36b5f74032e0e2198114f033c5b233d2e6bc"; // SHA-256 of the board access code
-async function _sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
-function _showGate(){
-  const o=document.createElement("div");o.id="gate";
-  o.style.cssText="position:fixed;inset:0;z-index:99999;background:#0f1419;display:flex;align-items:center;justify-content:center";
-  o.innerHTML='<form id="gateForm" style="background:#171d26;border:1px solid #2a323f;border-radius:14px;padding:34px 32px;width:330px;box-shadow:0 18px 50px rgba(0,0,0,.45);font:15px system-ui,-apple-system,Segoe UI,sans-serif;color:#e6edf3">'+
-  '<h1 style="font-size:18px;margin:0 0 4px">Agency CRM</h1>'+
-  '<p style="color:#8b97a7;font-size:13px;margin:0 0 22px">Contacts · Pipeline · Deals &middot; board access</p>'+
-  '<p id="gateErr" style="color:#ff5c5c;margin:0 0 14px;display:none">Incorrect access code. Try again.</p>'+
-  '<label style="display:block;font-size:12px;color:#8b97a7;margin:0 0 6px">Access code</label>'+
-  '<input id="gateCode" autocomplete="off" autofocus placeholder="XXXX-XXXX" style="width:100%;box-sizing:border-box;background:#0f1419;border:1px solid #2a323f;border-radius:8px;color:#e6edf3;padding:11px 12px;font-size:15px;letter-spacing:1px">'+
-  '<button type="submit" style="width:100%;margin-top:16px;background:#4f7cff;border:0;border-radius:8px;color:#fff;padding:11px;font-size:15px;font-weight:600;cursor:pointer">Enter</button>'+
-  '<p style="color:#5b6573;font-size:11px;text-align:center;margin:18px 0 0">Shared board gate &middot; authorized users only</p></form>';
-  document.body.appendChild(o);
-  document.getElementById("gateForm").addEventListener("submit",async(e)=>{
+/* ================= AUTH (Supabase email/password) ================= */
+function showLogin(msg){
+  document.getElementById("app").style.display="none";
+  let o=document.getElementById("authwrap");
+  if(!o){ o=document.createElement("div"); o.id="authwrap"; o.className="authwrap"; document.body.appendChild(o); }
+  o.innerHTML=`<form class="authcard" id="loginForm">
+    <h1>Agency CRM</h1>
+    <p class="sub">Contacts · Pipeline · Deals — board sign-in</p>
+    <p class="autherr" id="authErr" style="${msg?"display:block":""}">${esc(msg||"")}</p>
+    <label>Email</label>
+    <input id="authEmail" type="email" autocomplete="username" autofocus placeholder="you@company.com">
+    <label style="margin-top:12px">Password</label>
+    <input id="authPass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button type="submit" class="btn" style="width:100%;margin-top:18px;padding:11px">Sign in</button>
+    <p style="color:#5b6573;font-size:11px;text-align:center;margin:18px 0 0">Authenticated access · Supabase Auth · RLS-protected</p>
+  </form>`;
+  document.getElementById("loginForm").addEventListener("submit",async(e)=>{
     e.preventDefault();
-    const v=document.getElementById("gateCode").value.trim().toUpperCase();
-    if(await _sha(v)===_GATE_HASH){sessionStorage.setItem("crm_gate","1");o.remove();init();}
-    else{document.getElementById("gateErr").style.display="block";}
+    const email=document.getElementById("authEmail").value.trim();
+    const password=document.getElementById("authPass").value;
+    const btn=e.target.querySelector("button[type=submit]"); btn.disabled=true; btn.textContent="Signing in…";
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ const el=document.getElementById("authErr"); el.textContent=error.message||"Sign-in failed."; el.style.display="block"; btn.disabled=false; btn.textContent="Sign in"; return; }
+    SESSION_EMAIL = (data&&data.user&&data.user.email)||email;
+    o.remove();
+    document.getElementById("app").style.display="flex";
+    init();
   });
 }
-if(sessionStorage.getItem("crm_gate")==="1"){init();}else{_showGate();}
+async function signOut(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+
+async function boot(){
+  if(!sb){ showLogin("Supabase client failed to load. Check your connection and reload."); return; }
+  const { data } = await sb.auth.getSession();
+  if(data && data.session){
+    SESSION_EMAIL = data.session.user.email||"";
+    document.getElementById("app").style.display="flex";
+    init();
+  } else {
+    showLogin("");
+  }
+}
+boot();
 </script>
 </body>
 </html>
