@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]: C
+      - generic [ref=e18]: Convergence CRM
+      - generic [ref=e21]: Live · Supabase
+    - generic [ref=e22]:
+      - navigation [ref=e23]:
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: ▦
+          - text: Dashboard
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: ◉
+          - text: Contacts
+        - generic [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: ▥
+          - text: Pipeline
+        - generic [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: $
+          - text: Deals
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: ≋
+          - text: Activities
+      - main [ref=e34]:
+        - heading "Dashboard" [level=2] [ref=e36]
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]: Open pipeline
+            - generic [ref=e40]: $497,000
+            - generic [ref=e41]: 7 active deals
+          - generic [ref=e42]:
+            - generic [ref=e43]: Won
+            - generic [ref=e44]: $60,000
+            - generic [ref=e45]: 1 deals
+          - generic [ref=e46]:
+            - generic [ref=e47]: Contacts
+            - generic [ref=e48]: "8"
+            - generic [ref=e49]: 6 companies
+          - generic [ref=e50]:
+            - generic [ref=e51]: Activities
+            - generic [ref=e52]: "10"
+            - generic [ref=e53]: logged
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - heading "Pipeline by stage" [level=3] [ref=e56]
+            - table [ref=e57]:
+              - rowgroup [ref=e58]:
+                - row "lead 2 deals $70,000" [ref=e59] [cursor=pointer]:
+                  - cell "lead" [ref=e60]:
+                    - generic [ref=e61]: lead
+                  - cell "2 deals" [ref=e62]
+                  - cell "$70,000" [ref=e63]
+                - row "qualified 2 deals $158,000" [ref=e64] [cursor=pointer]:
+                  - cell "qualified" [ref=e65]:
+                    - generic [ref=e66]: qualified
+                  - cell "2 deals" [ref=e67]
+                  - cell "$158,000" [ref=e68]
+                - row "proposal 2 deals $174,000" [ref=e69] [cursor=pointer]:
+                  - cell "proposal" [ref=e70]:
+                    - generic [ref=e71]: proposal
+                  - cell "2 deals" [ref=e72]
+                  - cell "$174,000" [ref=e73]
+                - row "negotiation 1 deals $95,000" [ref=e74] [cursor=pointer]:
+                  - cell "negotiation" [ref=e75]:
+                    - generic [ref=e76]: negotiation
+                  - cell "1 deals" [ref=e77]
+                  - cell "$95,000" [ref=e78]
+                - row "won 1 deals $60,000" [ref=e79] [cursor=pointer]:
+                  - cell "won" [ref=e80]:
+                    - generic [ref=e81]: won
+                  - cell "1 deals" [ref=e82]
+                  - cell "$60,000" [ref=e83]
+                - row "lost 1 deals $15,000" [ref=e84] [cursor=pointer]:
+                  - cell "lost" [ref=e85]:
+                    - generic [ref=e86]: lost
+                  - cell "1 deals" [ref=e87]
+                  - cell "$15,000" [ref=e88]
+          - generic [ref=e89]:
+            - heading "Recent activity" [level=3] [ref=e90]
+            - list [ref=e91]:
+              - listitem [ref=e92]:
+                - generic [ref=e93]:
+                  - generic [ref=e94]: call
+                  - text: Northwind technical eval
+                - generic [ref=e95]: Marcus Lin · Jun 19, 2026
+              - listitem [ref=e96]:
+                - generic [ref=e97]:
+                  - generic [ref=e98]: task
+                  - text: Prep Quanta pilot SOW
+                - generic [ref=e99]: Yuki Tanaka · Jun 19, 2026
+              - listitem [ref=e100]:
+                - generic [ref=e101]:
+                  - generic [ref=e102]: meeting
+                  - text: Atlas COO demo
+                - generic [ref=e103]: Sam Okafor · Jun 18, 2026
+              - listitem [ref=e104]:
+                - generic [ref=e105]:
+                  - generic [ref=e106]: call
+                  - text: Helios negotiation
+                - generic [ref=e107]: Priya Nair · Jun 18, 2026
+              - listitem [ref=e108]:
+                - generic [ref=e109]:
+                  - generic [ref=e110]: meeting
+                  - text: Security review
+                - generic [ref=e111]: Marcus Lin · Jun 17, 2026
+              - listitem [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: email
+                  - text: Cedar clinical follow-up
+                - generic [ref=e115]: Dr. Elena Ross · Jun 16, 2026
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Detail" [level=3] [ref=e12]
+      - button "×" [ref=e13] [cursor=pointer]

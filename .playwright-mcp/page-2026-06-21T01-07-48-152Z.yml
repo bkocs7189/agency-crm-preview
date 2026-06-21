@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: C
+      - generic [ref=e5]: Convergence CRM
+      - generic [ref=e8]: Live · Supabase
+    - generic [ref=e9]:
+      - navigation [ref=e10]:
+        - generic [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: ▦
+          - text: Dashboard
+        - generic [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: ◉
+          - text: Contacts
+        - generic [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: ▥
+          - text: Pipeline
+        - generic [ref=e17] [cursor=pointer]:
+          - generic [ref=e18]: $
+          - text: Deals
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: ≋
+          - text: Activities
+      - main [ref=e21]:
+        - generic [ref=e178]:
+          - heading "Pipeline" [level=2] [ref=e179]
+          - button "+ New deal" [ref=e180] [cursor=pointer]
+        - generic [ref=e181]:
+          - generic [ref=e182]:
+            - generic [ref=e183]:
+              - generic [ref=e184]: lead
+              - generic [ref=e185]: 1 · $28,000
+            - generic [ref=e187]:
+              - generic [ref=e188]: Northwind — Threat Intel Add-on
+              - generic [ref=e189]: $28,000
+              - generic [ref=e190]: Marcus Lin · Sep 10, 2026
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - generic [ref=e193]: qualified
+              - generic [ref=e194]: 3 · $200,000
+            - generic [ref=e195]:
+              - generic [ref=e196]:
+                - generic [ref=e197]: Quanta — Manufacturing Agents
+                - generic [ref=e198]: $120,000
+                - generic [ref=e199]: Yuki Tanaka · Sep 1, 2026
+              - generic [ref=e200]:
+                - generic [ref=e201]: Brightline — Renewal + Expansion
+                - generic [ref=e202]: $42,000
+                - generic [ref=e203]: Grace Holloway · Sep 15, 2026
+              - generic [ref=e204]:
+                - generic [ref=e205]: Cedar Health — Clinic Pilot
+                - generic [ref=e206]: $38,000
+                - generic [ref=e207]: Dr. Elena Ross · Aug 15, 2026
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - generic [ref=e210]: proposal
+              - generic [ref=e211]: 2 · $174,000
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - generic [ref=e214]: Northwind — Agentic SOC Platform
+                - generic [ref=e215]: $120,000
+                - generic [ref=e216]: Dana Whitfield · Jul 20, 2026
+              - generic [ref=e217]:
+                - generic [ref=e218]: Atlas — Ops Automation
+                - generic [ref=e219]: $54,000
+                - generic [ref=e220]: Sam Okafor · Aug 5, 2026
+          - generic [ref=e221]:
+            - generic [ref=e222]:
+              - generic [ref=e223]: negotiation
+              - generic [ref=e224]: 1 · $95,000
+            - generic [ref=e226]:
+              - generic [ref=e227]: Helios — Compliance Automation
+              - generic [ref=e228]: $95,000
+              - generic [ref=e229]: Priya Nair · Jul 31, 2026
+          - generic [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e232]: won
+              - generic [ref=e233]: 1 · $60,000
+            - generic [ref=e235]:
+              - generic [ref=e236]: Helios — Phase 2 Rollout
+              - generic [ref=e237]: $60,000
+              - generic [ref=e238]: Priya Nair · Jun 5, 2026
+          - generic [ref=e239]:
+            - generic [ref=e240]:
+              - generic [ref=e241]: lost
+              - generic [ref=e242]: 1 · $15,000
+            - generic [ref=e244]:
+              - generic [ref=e245]: Legacy Co — Stale Opp
+              - generic [ref=e246]: $15,000
+              - generic [ref=e247]: Sam Okafor · May 20, 2026
+  - complementary [ref=e22]:
+    - generic [ref=e23]:
+      - heading "Detail" [level=3] [ref=e24]
+      - button "×" [ref=e25] [cursor=pointer]

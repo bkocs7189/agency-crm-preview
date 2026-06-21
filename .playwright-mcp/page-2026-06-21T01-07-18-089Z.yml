@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: C
+      - generic [ref=e5]: Convergence CRM
+      - generic [ref=e8]: Syncing…
+    - generic [ref=e9]:
+      - navigation [ref=e10]:
+        - generic [ref=e11] [cursor=pointer]:
+          - generic [ref=e12]: ▦
+          - text: Dashboard
+        - generic [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: ◉
+          - text: Contacts
+        - generic [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: ▥
+          - text: Pipeline
+        - generic [ref=e17] [cursor=pointer]:
+          - generic [ref=e18]: $
+          - text: Deals
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: ≋
+          - text: Activities
+      - main [ref=e21]
+  - complementary [ref=e22]:
+    - generic [ref=e23]:
+      - heading "Detail" [level=3] [ref=e24]
+      - button "×" [ref=e25] [cursor=pointer]

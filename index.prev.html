@@ -138,7 +138,7 @@ const KEY = "agency-crm-v1"; // local cache used as offline fallback only
    board tool). Falls back to localStorage if the backend is unreachable. */
 const SB_URL = "https://krthbgtykwamxqvapxnx.supabase.co";
 const SB_KEY = "sb_publishable_ToA4drk8mWPKiG6RsxRGyA_GC7iXSqf"; // publishable key only identifies the project; board entry is gated by the shared access code
-const TABLES = { companies:"crm56_companies", people:"crm56_people", deals:"crm56_deals", activities:"crm56_activities" };
+const TABLES = { companies:"crm_companies", people:"crm_people", deals:"crm_deals", activities:"crm_activities" };
 const COLLECTIONS = ["companies","people","deals","activities"];
 let sb = null, ONLINE = false;
 try { sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false } }); } catch(e){ sb = null; }
