@@ -1,0 +1,9 @@
+- generic [ref=e2]:
+  - heading "Agency CRM" [level=1] [ref=e3]
+  - paragraph [ref=e4]: Contacts · Pipeline · Deals — board sign-in
+  - generic [ref=e5]: Email
+  - textbox "you@company.com" [active] [ref=e6]
+  - generic [ref=e7]: Password
+  - textbox "••••••••" [ref=e8]
+  - button "Sign in" [ref=e9] [cursor=pointer]
+  - paragraph [ref=e10]: Authenticated access · Supabase Auth · RLS-protected

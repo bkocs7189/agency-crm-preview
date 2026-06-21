@@ -1,0 +1,8 @@
+[     102ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://bkocs7189.github.io/crm-preview/:0
+[     117ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://bkocs7189.github.io/favicon.ico:0
+[   50184ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crmui_people:0
+[   67941ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crmui_people?select=*&order=name.asc:0
+[   68032ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crmui_companies?select=*&order=name.asc:0
+[   68033ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crmui_activities?select=*&order=date.desc:0
+[   68034ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crmui_deals?select=*&order=value.desc:0
+[   68034ms] [ERROR] {code: PGRST205, details: null, hint: Perhaps you meant the table 'public.crm56_companies', message: Could not find the table 'public.crmui_companies' in the schema cache} @ https://bkocs7189.github.io/crm-preview/:214

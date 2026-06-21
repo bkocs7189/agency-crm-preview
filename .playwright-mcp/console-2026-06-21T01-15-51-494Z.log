@@ -1,0 +1,2 @@
+[     139ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8765/favicon.ico:0
+[   16428ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://krthbgtykwamxqvapxnx.supabase.co/rest/v1/crm_companies?select=*:0

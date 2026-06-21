@@ -1,0 +1,249 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - text: Omni CRM
+      - generic [ref=e5]: Internal sales suite
+    - generic [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: ▦
+      - generic [ref=e8]: Dashboard
+    - generic [ref=e9] [cursor=pointer]:
+      - generic [ref=e10]: 👤
+      - generic [ref=e11]: Contacts
+      - generic [ref=e48]: "10"
+    - generic [ref=e12] [cursor=pointer]:
+      - generic [ref=e13]: 🏢
+      - generic [ref=e14]: Companies
+      - generic [ref=e49]: "6"
+    - generic [ref=e15] [cursor=pointer]:
+      - generic [ref=e16]: ▤
+      - generic [ref=e17]: Pipeline
+      - generic [ref=e50]: "9"
+    - generic [ref=e18] [cursor=pointer]:
+      - generic [ref=e19]: ＄
+      - generic [ref=e20]: Deals
+      - generic [ref=e51]: "12"
+    - generic [ref=e21] [cursor=pointer]:
+      - generic [ref=e22]: ⌁
+      - generic [ref=e23]: Activities
+      - generic [ref=e52]: "12"
+    - generic [ref=e25]:
+      - generic [ref=e26]: Owner scope
+      - combobox [ref=e27]:
+        - option "All owners" [selected]
+        - option "A. Kim"
+        - option "J. Lee"
+        - option "M. Ortiz"
+        - option "S. Park"
+    - generic [ref=e28]:
+      - 'button "Role: Editor (switch to Viewer)" [ref=e53] [cursor=pointer]'
+      - button "Export JSON" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]: ● Demo data · backend pending
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - textbox "🔍 Search people, companies, deals…" [ref=e35]:
+        - /placeholder: 🔍  Search people, companies, deals…
+      - button "+ New ▾" [ref=e37] [cursor=pointer]
+    - main [ref=e38]:
+      - generic [ref=e211]:
+        - generic [ref=e212]:
+          - heading "Pipeline" [level=1] [ref=e213]
+          - paragraph [ref=e214]: "Open: $546k · Weighted $265k · drag a card to change stage"
+        - button "+ Add Deal" [ref=e215] [cursor=pointer]
+      - generic [ref=e216]:
+        - generic [ref=e217]:
+          - generic [ref=e218]:
+            - text: Lead
+            - generic [ref=e219]:
+              - generic [ref=e220]: 2 deals
+              - generic [ref=e221]: $165k
+          - generic [ref=e222]:
+            - generic "Wayne pilot, Lead, $25,000, 20%" [ref=e223]:
+              - generic [ref=e224]:
+                - generic [ref=e225]: Wayne pilot
+                - generic "Move to stage" [ref=e226] [cursor=pointer]: ⋯
+              - generic [ref=e227]: Wayne Industries
+              - generic [ref=e228]:
+                - generic [ref=e229]: $25k
+                - generic [ref=e230]: 20%
+              - generic [ref=e231]:
+                - generic [ref=e233]:
+                  - generic [ref=e234]: JL
+                  - text: J. Lee
+                - generic [ref=e235]: 3d overdue
+            - generic "Umbrella rollout, Lead, $140,000, 20%" [ref=e236]:
+              - generic [ref=e237]:
+                - generic [ref=e238]: Umbrella rollout
+                - generic "Move to stage" [ref=e239] [cursor=pointer]: ⋯
+              - generic [ref=e240]: Umbrella Corp
+              - generic [ref=e241]:
+                - generic [ref=e242]: $140k
+                - generic [ref=e243]: 20%
+              - generic [ref=e244]:
+                - generic [ref=e246]:
+                  - generic [ref=e247]: SP
+                  - text: S. Park
+                - generic [ref=e248]: in 110d
+        - generic [ref=e249]:
+          - generic [ref=e250]:
+            - text: Qualified
+            - generic [ref=e251]:
+              - generic [ref=e252]: 3 deals
+              - generic [ref=e253]: $153k
+          - generic [ref=e254]:
+            - generic "Globex net-new, Qualified, $120,000, 45%" [ref=e255]:
+              - generic [ref=e256]:
+                - generic [ref=e257]: Globex net-new
+                - generic "Move to stage" [ref=e258] [cursor=pointer]: ⋯
+              - generic [ref=e259]: Globex
+              - generic [ref=e260]:
+                - generic [ref=e261]: $120k
+                - generic [ref=e262]: 45%
+              - generic [ref=e263]:
+                - generic [ref=e265]:
+                  - generic [ref=e266]: JL
+                  - text: J. Lee
+                - generic [ref=e267]: in 87d
+            - generic "Stark add-on, Qualified, $18,000, 40%" [ref=e268]:
+              - generic [ref=e269]:
+                - generic [ref=e270]: Stark add-on
+                - generic "Move to stage" [ref=e271] [cursor=pointer]: ⋯
+              - generic [ref=e272]: Stark LLC
+              - generic [ref=e273]:
+                - generic [ref=e274]: $18k
+                - generic [ref=e275]: 40%
+              - generic [ref=e276]:
+                - generic [ref=e278]:
+                  - generic [ref=e279]: MO
+                  - text: M. Ortiz
+                - generic [ref=e280]: in 55d · stalled
+            - generic "Reyes starter, Qualified, $15,000, 50%" [ref=e281]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: Reyes starter
+                - generic "Move to stage" [ref=e284] [cursor=pointer]: ⋯
+              - generic [ref=e285]: Globex
+              - generic [ref=e286]:
+                - generic [ref=e287]: $15k
+                - generic [ref=e288]: 50%
+              - generic [ref=e289]:
+                - generic [ref=e291]:
+                  - generic [ref=e292]: JL
+                  - text: J. Lee
+                - generic [ref=e293]: in 18d
+        - generic [ref=e294]:
+          - generic [ref=e295]:
+            - text: Proposal
+            - generic [ref=e296]:
+              - generic [ref=e297]: 2 deals
+              - generic [ref=e298]: $90k
+          - generic [ref=e299]:
+            - generic "Acme expansion, Proposal, $30,000, 60%" [ref=e300]:
+              - generic [ref=e301]:
+                - generic [ref=e302]: Acme expansion
+                - generic "Move to stage" [ref=e303] [cursor=pointer]: ⋯
+              - generic [ref=e304]: Acme Co
+              - generic [ref=e305]:
+                - generic [ref=e306]: $30k
+                - generic [ref=e307]: 60%
+              - generic [ref=e308]:
+                - generic [ref=e310]:
+                  - generic [ref=e311]: AK
+                  - text: A. Kim
+                - generic [ref=e312]: in 40d
+            - generic "Initech expand, Proposal, $60,000, 65%" [ref=e313]:
+              - generic [ref=e314]:
+                - generic [ref=e315]: Initech expand
+                - generic "Move to stage" [ref=e316] [cursor=pointer]: ⋯
+              - generic [ref=e317]: Initech
+              - generic [ref=e318]:
+                - generic [ref=e319]: $60k
+                - generic [ref=e320]: 65%
+              - generic [ref=e321]:
+                - generic [ref=e323]:
+                  - generic [ref=e324]: AK
+                  - text: A. Kim
+                - generic [ref=e325]: in 30d · stalled
+        - generic [ref=e326]:
+          - generic [ref=e327]:
+            - text: Negotiation
+            - generic [ref=e328]:
+              - generic [ref=e329]: 2 deals
+              - generic [ref=e330]: $138k
+          - generic [ref=e331]:
+            - generic "Acme renewal, Negotiation, $48,000, 80%" [ref=e332]:
+              - generic [ref=e333]:
+                - generic [ref=e334]: Acme renewal
+                - generic "Move to stage" [ref=e335] [cursor=pointer]: ⋯
+              - generic [ref=e336]: Acme Co
+              - generic [ref=e337]:
+                - generic [ref=e338]: $48k
+                - generic [ref=e339]: 80%
+              - generic [ref=e340]:
+                - generic [ref=e342]:
+                  - generic [ref=e343]: AK
+                  - text: A. Kim
+                - generic [ref=e344]: in 71d
+            - generic "Stark platform, Negotiation, $90,000, 75%" [ref=e345]:
+              - generic [ref=e346]:
+                - generic [ref=e347]: Stark platform
+                - generic "Move to stage" [ref=e348] [cursor=pointer]: ⋯
+              - generic [ref=e349]: Stark LLC
+              - generic [ref=e350]:
+                - generic [ref=e351]: $90k
+                - generic [ref=e352]: 75%
+              - generic [ref=e353]:
+                - generic [ref=e355]:
+                  - generic [ref=e356]: MO
+                  - text: M. Ortiz
+                - generic [ref=e357]: in 20d
+        - generic [ref=e358]:
+          - generic [ref=e359]:
+            - text: Closed Won
+            - generic [ref=e360]:
+              - generic [ref=e361]: 2 deals
+              - generic [ref=e362]: $107k
+          - generic [ref=e363]:
+            - generic "Acme phase 1, Closed Won, $62,000, 100%" [ref=e364]:
+              - generic [ref=e365]:
+                - generic [ref=e366]: Acme phase 1
+                - generic "Move to stage" [ref=e367] [cursor=pointer]: ⋯
+              - generic [ref=e368]: Acme Co
+              - generic [ref=e369]:
+                - generic [ref=e370]: $62k
+                - generic [ref=e371]: 100%
+              - generic [ref=e372]:
+                - generic [ref=e374]:
+                  - generic [ref=e375]: AK
+                  - text: A. Kim
+                - generic [ref=e376]: 8d overdue
+            - generic "Globex pilot, Closed Won, $45,000, 100%" [ref=e377]:
+              - generic [ref=e378]:
+                - generic [ref=e379]: Globex pilot
+                - generic "Move to stage" [ref=e380] [cursor=pointer]: ⋯
+              - generic [ref=e381]: Globex
+              - generic [ref=e382]:
+                - generic [ref=e383]: $45k
+                - generic [ref=e384]: 100%
+              - generic [ref=e385]:
+                - generic [ref=e387]:
+                  - generic [ref=e388]: JL
+                  - text: J. Lee
+                - generic [ref=e389]: 15d overdue
+        - generic [ref=e390]:
+          - generic [ref=e391]:
+            - text: Closed Lost
+            - generic [ref=e392]:
+              - generic [ref=e393]: 1 deal
+              - generic [ref=e394]: $38k
+          - generic "Initech legacy, Closed Lost, $38,000, 0%" [ref=e396]:
+            - generic [ref=e397]:
+              - generic [ref=e398]: Initech legacy
+              - generic "Move to stage" [ref=e399] [cursor=pointer]: ⋯
+            - generic [ref=e400]: Initech
+            - generic [ref=e401]:
+              - generic [ref=e402]: $38k
+              - generic [ref=e403]: 0%
+            - generic [ref=e404]:
+              - generic [ref=e406]:
+                - generic [ref=e407]: AK
+                - text: A. Kim
+              - generic [ref=e408]: 20d overdue

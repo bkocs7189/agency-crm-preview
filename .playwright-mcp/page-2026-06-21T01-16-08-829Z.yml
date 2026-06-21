@@ -1,0 +1,190 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - text: Omni CRM
+      - generic [ref=e5]: Internal sales suite
+    - generic [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: ▦
+      - generic [ref=e8]: Dashboard
+    - generic [ref=e9] [cursor=pointer]:
+      - generic [ref=e10]: 👤
+      - generic [ref=e11]: Contacts
+      - generic [ref=e48]: "10"
+    - generic [ref=e12] [cursor=pointer]:
+      - generic [ref=e13]: 🏢
+      - generic [ref=e14]: Companies
+      - generic [ref=e49]: "6"
+    - generic [ref=e15] [cursor=pointer]:
+      - generic [ref=e16]: ▤
+      - generic [ref=e17]: Pipeline
+      - generic [ref=e50]: "9"
+    - generic [ref=e18] [cursor=pointer]:
+      - generic [ref=e19]: ＄
+      - generic [ref=e20]: Deals
+      - generic [ref=e51]: "12"
+    - generic [ref=e21] [cursor=pointer]:
+      - generic [ref=e22]: ⌁
+      - generic [ref=e23]: Activities
+      - generic [ref=e52]: "12"
+    - generic [ref=e25]:
+      - generic [ref=e26]: Owner scope
+      - combobox [ref=e27]:
+        - option "All owners" [selected]
+        - option "A. Kim"
+        - option "J. Lee"
+        - option "M. Ortiz"
+        - option "S. Park"
+    - generic [ref=e28]:
+      - 'button "Role: Editor (switch to Viewer)" [ref=e53] [cursor=pointer]'
+      - button "Export JSON" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]: ● Demo data · backend pending
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - textbox "🔍 Search people, companies, deals…" [ref=e35]:
+        - /placeholder: 🔍  Search people, companies, deals…
+      - button "+ New ▾" [ref=e37] [cursor=pointer]
+    - main [ref=e38]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading "Dashboard" [level=1] [ref=e56]
+          - paragraph [ref=e57]: All owners · pipeline health, recent activity, leaderboard
+        - button "+ New Deal" [ref=e58] [cursor=pointer]
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - heading "Open pipeline" [level=3] [ref=e61]
+          - generic [ref=e62]: $546k
+          - generic [ref=e63]: 9 open deals
+        - generic [ref=e64]:
+          - heading "Weighted forecast" [level=3] [ref=e65]
+          - generic [ref=e66]: $265k
+          - generic [ref=e67]: amount × probability
+        - generic [ref=e68]:
+          - heading "Won this month" [level=3] [ref=e69]
+          - generic [ref=e70]: $107k
+          - generic [ref=e73]: 54% of $200k target
+        - generic [ref=e74]:
+          - heading "Contacts · Companies" [level=3] [ref=e75]
+          - generic [ref=e76]: 10 · 6
+          - generic [ref=e77]: 2 deals won
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - heading "Pipeline by stage" [level=3] [ref=e81]
+            - generic [ref=e82] [cursor=pointer]: Open board →
+          - table [ref=e83]:
+            - rowgroup [ref=e84]:
+              - row "Stage Deals Open value" [ref=e85]:
+                - columnheader "Stage" [ref=e86]
+                - columnheader "Deals" [ref=e87]
+                - columnheader "Open value" [ref=e88]
+            - rowgroup [ref=e89]:
+              - row "Lead 2 $165k" [ref=e90]:
+                - cell "Lead" [ref=e91]:
+                  - generic [ref=e92]: Lead
+                - cell "2" [ref=e94]
+                - cell "$165k" [ref=e95]:
+                  - generic [ref=e99]: $165k
+              - row "Qualified 3 $153k" [ref=e100]:
+                - cell "Qualified" [ref=e101]:
+                  - generic [ref=e102]: Qualified
+                - cell "3" [ref=e104]
+                - cell "$153k" [ref=e105]:
+                  - generic [ref=e109]: $153k
+              - row "Proposal 2 $90k" [ref=e110]:
+                - cell "Proposal" [ref=e111]:
+                  - generic [ref=e112]: Proposal
+                - cell "2" [ref=e114]
+                - cell "$90k" [ref=e115]:
+                  - generic [ref=e119]: $90k
+              - row "Negotiation 2 $138k" [ref=e120]:
+                - cell "Negotiation" [ref=e121]:
+                  - generic [ref=e122]: Negotiation
+                - cell "2" [ref=e124]
+                - cell "$138k" [ref=e125]:
+                  - generic [ref=e129]: $138k
+          - heading "Leaderboard · this quarter" [level=3] [ref=e131]
+          - table [ref=e132]:
+            - rowgroup [ref=e133]:
+              - row "Owner Won $ Activities" [ref=e134]:
+                - columnheader "Owner" [ref=e135]
+                - columnheader "Won $" [ref=e136]
+                - columnheader "Activities" [ref=e137]
+            - rowgroup [ref=e138]:
+              - row "1. AK A. Kim $62k 6" [ref=e139]:
+                - cell "1. AK A. Kim" [ref=e140]:
+                  - generic [ref=e141]:
+                    - generic [ref=e142]: "1."
+                    - generic [ref=e143]: AK
+                    - text: A. Kim
+                - cell "$62k" [ref=e144]
+                - cell "6" [ref=e145]
+              - row "2. JL J. Lee $45k 2" [ref=e146]:
+                - cell "2. JL J. Lee" [ref=e147]:
+                  - generic [ref=e148]:
+                    - generic [ref=e149]: "2."
+                    - generic [ref=e150]: JL
+                    - text: J. Lee
+                - cell "$45k" [ref=e151]
+                - cell "2" [ref=e152]
+              - row "3. MO M. Ortiz $0 2" [ref=e153]:
+                - cell "3. MO M. Ortiz" [ref=e154]:
+                  - generic [ref=e155]:
+                    - generic [ref=e156]: "3."
+                    - generic [ref=e157]: MO
+                    - text: M. Ortiz
+                - cell "$0" [ref=e158]
+                - cell "2" [ref=e159]
+              - row "4. SP S. Park $0 2" [ref=e160]:
+                - cell "4. SP S. Park" [ref=e161]:
+                  - generic [ref=e162]:
+                    - generic [ref=e163]: "4."
+                    - generic [ref=e164]: SP
+                    - text: S. Park
+                - cell "$0" [ref=e165]
+                - cell "2" [ref=e166]
+        - generic [ref=e167]:
+          - generic [ref=e168]:
+            - heading "Activity feed" [level=3] [ref=e169]
+            - generic [ref=e170] [cursor=pointer]: All →
+          - generic [ref=e172]:
+            - generic [ref=e173]:
+              - generic [ref=e174]: 📞
+              - generic [ref=e175]:
+                - generic [ref=e176]: Discussed renewal pricing
+                - generic [ref=e177]: A. Kim · today · Jane Lee
+            - generic [ref=e178]:
+              - generic [ref=e179]: ✉️
+              - generic [ref=e180]:
+                - generic [ref=e181]: Sent proposal
+                - generic [ref=e182]: J. Lee · today · Sam Ortiz
+            - generic [ref=e183]:
+              - generic [ref=e184]: ✓
+              - generic [ref=e185]:
+                - generic [ref=e186]: Send Umbrella SOW
+                - generic [ref=e187]: S. Park · today · Alice Wong
+            - generic [ref=e188]:
+              - generic [ref=e189]: 👥
+              - generic [ref=e190]:
+                - generic [ref=e191]: Contract review
+                - generic [ref=e192]: A. Kim · 1d ago · Jane Lee
+            - generic [ref=e193]:
+              - generic [ref=e194]: 📝
+              - generic [ref=e195]:
+                - generic [ref=e196]: Decision slipped to Q4
+                - generic [ref=e197]: A. Kim · 1d ago · Initech
+            - generic [ref=e198]:
+              - generic [ref=e199]: ✉️
+              - generic [ref=e200]:
+                - generic [ref=e201]: Sent contract
+                - generic [ref=e202]: A. Kim · 1d ago · Jane Lee
+          - generic [ref=e203]:
+            - heading "⚠ Needs attention" [level=3] [ref=e204]
+            - generic [ref=e205]:
+              - generic [ref=e206]: "1"
+              - text: deals with close date overdue
+            - generic [ref=e207]:
+              - generic [ref=e208]: "2"
+              - text: deals stalled (in-stage > 21d)
+            - generic [ref=e209]:
+              - generic [ref=e210]: "5"
+              - text: contacts cold (no activity 30d+)

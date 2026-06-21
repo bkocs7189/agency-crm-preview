@@ -1,0 +1,207 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - text: Omni CRM
+      - generic [ref=e5]: Internal sales suite
+    - generic [ref=e6] [cursor=pointer]:
+      - generic [ref=e7]: ▦
+      - generic [ref=e8]: Dashboard
+    - generic [ref=e9] [cursor=pointer]:
+      - generic [ref=e10]: 👤
+      - generic [ref=e11]: Contacts
+      - generic [ref=e48]: "10"
+    - generic [ref=e12] [cursor=pointer]:
+      - generic [ref=e13]: 🏢
+      - generic [ref=e14]: Companies
+      - generic [ref=e49]: "6"
+    - generic [ref=e15] [cursor=pointer]:
+      - generic [ref=e16]: ▤
+      - generic [ref=e17]: Pipeline
+      - generic [ref=e50]: "9"
+    - generic [ref=e18] [cursor=pointer]:
+      - generic [ref=e19]: ＄
+      - generic [ref=e20]: Deals
+      - generic [ref=e51]: "12"
+    - generic [ref=e21] [cursor=pointer]:
+      - generic [ref=e22]: ⌁
+      - generic [ref=e23]: Activities
+      - generic [ref=e52]: "12"
+    - generic [ref=e25]:
+      - generic [ref=e26]: Owner scope
+      - combobox [ref=e27]:
+        - option "All owners" [selected]
+        - option "A. Kim"
+        - option "J. Lee"
+        - option "M. Ortiz"
+        - option "S. Park"
+    - generic [ref=e28]:
+      - 'button "Role: Editor (switch to Viewer)" [ref=e53] [cursor=pointer]'
+      - button "Export JSON" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]: ● Demo data · backend pending
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - textbox "🔍 Search people, companies, deals…" [ref=e35]:
+        - /placeholder: 🔍  Search people, companies, deals…
+      - button "+ New ▾" [ref=e37] [cursor=pointer]
+    - main [ref=e38]:
+      - generic [ref=e409]:
+        - generic [ref=e410]:
+          - heading "Deals" [level=1] [ref=e411]
+          - paragraph [ref=e412]: Forecast table — sortable, filterable. Weighted = amount × probability (computed)
+        - generic [ref=e413]:
+          - textbox "Filter…" [ref=e414]
+          - button "+ Add Deal" [ref=e415] [cursor=pointer]
+      - generic [ref=e416]:
+        - generic [ref=e417]:
+          - button "Open" [ref=e418] [cursor=pointer]
+          - button "Won" [ref=e419] [cursor=pointer]
+          - button "Lost" [ref=e420] [cursor=pointer]
+          - button "All" [ref=e421] [cursor=pointer]
+        - generic [ref=e422]: 9 deals
+      - table [ref=e423]:
+        - rowgroup [ref=e424]:
+          - row "Deal Company Stage Amount Prob Weighted Close" [ref=e425]:
+            - columnheader "Deal" [ref=e426]
+            - columnheader "Company" [ref=e427]
+            - columnheader "Stage" [ref=e428]
+            - columnheader "Amount" [ref=e429]
+            - columnheader "Prob" [ref=e430]
+            - columnheader "Weighted" [ref=e431]
+            - columnheader "Close" [ref=e432]
+            - columnheader [ref=e433]
+        - rowgroup [ref=e434]:
+          - row "Umbrella rollout Umbrella Corp Lead $140,000 20% $28k in 110d Edit ✕" [ref=e435]:
+            - cell "Umbrella rollout" [ref=e436]:
+              - generic [ref=e437]: Umbrella rollout
+            - cell "Umbrella Corp" [ref=e438]
+            - cell "Lead" [ref=e439]:
+              - generic [ref=e440]: Lead
+            - cell "$140,000" [ref=e442]
+            - cell "20%" [ref=e443]:
+              - generic [ref=e444]: 20%
+            - cell "$28k" [ref=e445]
+            - cell "in 110d" [ref=e446]
+            - cell "Edit ✕" [ref=e447]:
+              - button "Edit" [ref=e448] [cursor=pointer]
+              - button "✕" [ref=e449] [cursor=pointer]
+          - row "Wayne pilot Wayne Industries Lead $25,000 20% $5k 3d overdue Edit ✕" [ref=e450]:
+            - cell "Wayne pilot" [ref=e451]:
+              - generic [ref=e452]: Wayne pilot
+            - cell "Wayne Industries" [ref=e453]
+            - cell "Lead" [ref=e454]:
+              - generic [ref=e455]: Lead
+            - cell "$25,000" [ref=e457]
+            - cell "20%" [ref=e458]:
+              - generic [ref=e459]: 20%
+            - cell "$5k" [ref=e460]
+            - cell "3d overdue" [ref=e461]
+            - cell "Edit ✕" [ref=e462]:
+              - button "Edit" [ref=e463] [cursor=pointer]
+              - button "✕" [ref=e464] [cursor=pointer]
+          - row "Globex net-new Globex Qualified $120,000 45% $54k in 87d Edit ✕" [ref=e465]:
+            - cell "Globex net-new" [ref=e466]:
+              - generic [ref=e467]: Globex net-new
+            - cell "Globex" [ref=e468]
+            - cell "Qualified" [ref=e469]:
+              - generic [ref=e470]: Qualified
+            - cell "$120,000" [ref=e472]
+            - cell "45%" [ref=e473]:
+              - generic [ref=e474]: 45%
+            - cell "$54k" [ref=e475]
+            - cell "in 87d" [ref=e476]
+            - cell "Edit ✕" [ref=e477]:
+              - button "Edit" [ref=e478] [cursor=pointer]
+              - button "✕" [ref=e479] [cursor=pointer]
+          - row "Stark add-on ● Stark LLC Qualified $18,000 40% $7k in 55d Edit ✕" [ref=e480]:
+            - cell "Stark add-on ●" [ref=e481]:
+              - generic [ref=e482]: Stark add-on
+              - text: ●
+            - cell "Stark LLC" [ref=e483]
+            - cell "Qualified" [ref=e484]:
+              - generic [ref=e485]: Qualified
+            - cell "$18,000" [ref=e487]
+            - cell "40%" [ref=e488]:
+              - generic [ref=e489]: 40%
+            - cell "$7k" [ref=e490]
+            - cell "in 55d" [ref=e491]
+            - cell "Edit ✕" [ref=e492]:
+              - button "Edit" [ref=e493] [cursor=pointer]
+              - button "✕" [ref=e494] [cursor=pointer]
+          - row "Reyes starter Globex Qualified $15,000 50% $8k in 18d Edit ✕" [ref=e495]:
+            - cell "Reyes starter" [ref=e496]:
+              - generic [ref=e497]: Reyes starter
+            - cell "Globex" [ref=e498]
+            - cell "Qualified" [ref=e499]:
+              - generic [ref=e500]: Qualified
+            - cell "$15,000" [ref=e502]
+            - cell "50%" [ref=e503]:
+              - generic [ref=e504]: 50%
+            - cell "$8k" [ref=e505]
+            - cell "in 18d" [ref=e506]
+            - cell "Edit ✕" [ref=e507]:
+              - button "Edit" [ref=e508] [cursor=pointer]
+              - button "✕" [ref=e509] [cursor=pointer]
+          - row "Initech expand ● Initech Proposal $60,000 65% $39k in 30d Edit ✕" [ref=e510]:
+            - cell "Initech expand ●" [ref=e511]:
+              - generic [ref=e512]: Initech expand
+              - text: ●
+            - cell "Initech" [ref=e513]
+            - cell "Proposal" [ref=e514]:
+              - generic [ref=e515]: Proposal
+            - cell "$60,000" [ref=e517]
+            - cell "65%" [ref=e518]:
+              - generic [ref=e519]: 65%
+            - cell "$39k" [ref=e520]
+            - cell "in 30d" [ref=e521]
+            - cell "Edit ✕" [ref=e522]:
+              - button "Edit" [ref=e523] [cursor=pointer]
+              - button "✕" [ref=e524] [cursor=pointer]
+          - row "Acme expansion Acme Co Proposal $30,000 60% $18k in 40d Edit ✕" [ref=e525]:
+            - cell "Acme expansion" [ref=e526]:
+              - generic [ref=e527]: Acme expansion
+            - cell "Acme Co" [ref=e528]
+            - cell "Proposal" [ref=e529]:
+              - generic [ref=e530]: Proposal
+            - cell "$30,000" [ref=e532]
+            - cell "60%" [ref=e533]:
+              - generic [ref=e534]: 60%
+            - cell "$18k" [ref=e535]
+            - cell "in 40d" [ref=e536]
+            - cell "Edit ✕" [ref=e537]:
+              - button "Edit" [ref=e538] [cursor=pointer]
+              - button "✕" [ref=e539] [cursor=pointer]
+          - row "Stark platform Stark LLC Negotiation $90,000 75% $68k in 20d Edit ✕" [ref=e540]:
+            - cell "Stark platform" [ref=e541]:
+              - generic [ref=e542]: Stark platform
+            - cell "Stark LLC" [ref=e543]
+            - cell "Negotiation" [ref=e544]:
+              - generic [ref=e545]: Negotiation
+            - cell "$90,000" [ref=e547]
+            - cell "75%" [ref=e548]:
+              - generic [ref=e549]: 75%
+            - cell "$68k" [ref=e550]
+            - cell "in 20d" [ref=e551]
+            - cell "Edit ✕" [ref=e552]:
+              - button "Edit" [ref=e553] [cursor=pointer]
+              - button "✕" [ref=e554] [cursor=pointer]
+          - row "Acme renewal Acme Co Negotiation $48,000 80% $38k in 71d Edit ✕" [ref=e555]:
+            - cell "Acme renewal" [ref=e556]:
+              - generic [ref=e557]: Acme renewal
+            - cell "Acme Co" [ref=e558]
+            - cell "Negotiation" [ref=e559]:
+              - generic [ref=e560]: Negotiation
+            - cell "$48,000" [ref=e562]
+            - cell "80%" [ref=e563]:
+              - generic [ref=e564]: 80%
+            - cell "$38k" [ref=e565]
+            - cell "in 71d" [ref=e566]
+            - cell "Edit ✕" [ref=e567]:
+              - button "Edit" [ref=e568] [cursor=pointer]
+              - button "✕" [ref=e569] [cursor=pointer]
+        - rowgroup [ref=e570]:
+          - row "Totals (open) $546,000 $265k" [ref=e571]:
+            - cell "Totals (open)" [ref=e572]
+            - cell "$546,000" [ref=e573]
+            - cell [ref=e574]
+            - cell "$265k" [ref=e575]
+            - cell [ref=e576]

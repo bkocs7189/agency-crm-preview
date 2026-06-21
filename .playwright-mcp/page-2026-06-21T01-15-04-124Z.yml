@@ -1,0 +1,69 @@
+- generic [ref=e1]:
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]: C
+      - generic [ref=e18]: Convergence CRM
+      - generic [ref=e21]: Live · Supabase
+    - generic [ref=e22]:
+      - navigation [ref=e23]:
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: ▦
+          - text: Dashboard
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: ◉
+          - text: Contacts
+        - generic [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: ▥
+          - text: Pipeline
+        - generic [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: $
+          - text: Deals
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: ≋
+          - text: Activities
+      - main [ref=e34]:
+        - generic [ref=e169]:
+          - heading "Contacts" [level=2] [ref=e170]
+          - textbox "Search contacts…" [ref=e171]: Priya
+          - button "+ New contact" [active] [ref=e172] [cursor=pointer]
+        - table [ref=e174]:
+          - rowgroup [ref=e175]:
+            - row "Name Company Title Email" [ref=e176]:
+              - columnheader "Name" [ref=e177]
+              - columnheader "Company" [ref=e178]
+              - columnheader "Title" [ref=e179]
+              - columnheader "Email" [ref=e180]
+          - rowgroup [ref=e181]:
+            - row "Priya Nair Helios Fintech VP Engineering priya@heliosfintech.com" [ref=e182] [cursor=pointer]:
+              - cell "Priya Nair" [ref=e183]
+              - cell "Helios Fintech" [ref=e184]
+              - cell "VP Engineering" [ref=e185]
+              - cell "priya@heliosfintech.com" [ref=e186]
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - heading "New contact" [level=3] [ref=e188]
+      - button "×" [ref=e13] [cursor=pointer]
+    - generic [ref=e14]:
+      - generic [ref=e189]: Name
+      - textbox [ref=e190]
+      - generic [ref=e191]: Company
+      - combobox [ref=e192]:
+        - option "—" [selected]
+        - option "Atlas Logistics"
+        - option "Brightline Media"
+        - option "Cedar Health Systems"
+        - option "Helios Fintech"
+        - option "Northwind Security"
+        - option "Quanta Robotics"
+      - generic [ref=e193]: Title
+      - textbox [ref=e194]
+      - generic [ref=e195]:
+        - generic [ref=e196]:
+          - generic [ref=e197]: Email
+          - textbox [ref=e198]
+        - generic [ref=e199]:
+          - generic [ref=e200]: Phone
+          - textbox [ref=e201]
+      - generic [ref=e202]: Notes
+      - textbox [ref=e203]
+      - button "Save" [ref=e204] [cursor=pointer]

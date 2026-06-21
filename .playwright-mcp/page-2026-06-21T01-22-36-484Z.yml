@@ -1,0 +1,139 @@
+- generic [ref=e12]:
+  - complementary [ref=e13]:
+    - generic [ref=e14]:
+      - text: Agency CRM
+      - generic [ref=e15]: Contacts · Pipeline · Deals
+    - generic [ref=e16] [cursor=pointer]: Dashboard
+    - generic [ref=e17] [cursor=pointer]:
+      - text: Contacts
+      - generic [ref=e18]: "4"
+    - generic [ref=e19] [cursor=pointer]:
+      - text: Pipeline
+      - generic [ref=e20]: "3"
+    - generic [ref=e21] [cursor=pointer]:
+      - text: Activities
+      - generic [ref=e22]: "5"
+    - generic [ref=e23]:
+      - button "Export JSON" [ref=e24] [cursor=pointer]
+      - generic [ref=e25]: "Signed in: crm-demo@agency.local"
+      - button "Sign out" [ref=e26] [cursor=pointer]
+      - generic [ref=e27]: ● Live · shared
+  - main [ref=e28]:
+    - heading "Dashboard" [level=1] [ref=e29]
+    - paragraph [ref=e30]: Sales pipeline health — 2026-06-21
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - heading "Open pipeline" [level=3] [ref=e33]
+        - generic [ref=e34]: $193k
+        - generic [ref=e35]: 3 open deals
+      - generic [ref=e36]:
+        - heading "Weighted forecast" [level=3] [ref=e37]
+        - generic [ref=e38]: $92k
+        - generic [ref=e39]: value × probability
+      - generic [ref=e40]:
+        - heading "Won (total)" [level=3] [ref=e41]
+        - generic [ref=e42]: $36k
+        - generic [ref=e43]: 1 closed-won
+      - generic [ref=e44]:
+        - heading "Contacts" [level=3] [ref=e45]
+        - generic [ref=e46]: "4"
+        - generic [ref=e47]: 3 companies
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - heading "Pipeline by stage" [level=3] [ref=e51]
+          - generic [ref=e52] [cursor=pointer]: Open pipeline →
+        - table [ref=e53]:
+          - rowgroup [ref=e54]:
+            - row "Stage Deals Value" [ref=e55]:
+              - columnheader "Stage" [ref=e56]
+              - columnheader "Deals" [ref=e57]
+              - columnheader "Value" [ref=e58]
+          - rowgroup [ref=e59]:
+            - row "Lead 0 $0" [ref=e60]:
+              - cell "Lead" [ref=e61]:
+                - generic [ref=e62]: Lead
+              - cell "0" [ref=e63]
+              - cell "$0" [ref=e64]:
+                - generic [ref=e67]: $0
+            - row "Qualified 1 $45k" [ref=e68]:
+              - cell "Qualified" [ref=e69]:
+                - generic [ref=e70]: Qualified
+              - cell "1" [ref=e71]
+              - cell "$45k" [ref=e72]:
+                - generic [ref=e76]: $45k
+            - row "Proposal 1 $120k" [ref=e77]:
+              - cell "Proposal" [ref=e78]:
+                - generic [ref=e79]: Proposal
+              - cell "1" [ref=e80]
+              - cell "$120k" [ref=e81]:
+                - generic [ref=e85]: $120k
+            - row "Negotiation 1 $28k" [ref=e86]:
+              - cell "Negotiation" [ref=e87]:
+                - generic [ref=e88]: Negotiation
+              - cell "1" [ref=e89]
+              - cell "$28k" [ref=e90]:
+                - generic [ref=e94]: $28k
+        - heading "Top open deals" [level=3] [ref=e96]
+        - table [ref=e97]:
+          - rowgroup [ref=e98]:
+            - row "Deal Stage Value Weighted" [ref=e99]:
+              - columnheader "Deal" [ref=e100]
+              - columnheader "Stage" [ref=e101]
+              - columnheader "Value" [ref=e102]
+              - columnheader "Weighted" [ref=e103]
+          - rowgroup [ref=e104]:
+            - row "Acme — Platform License Acme Corp Proposal $120k $60k" [ref=e105]:
+              - cell "Acme — Platform License Acme Corp" [ref=e106]:
+                - text: Acme — Platform License
+                - generic [ref=e107]: Acme Corp
+              - cell "Proposal" [ref=e108]:
+                - generic [ref=e109]: Proposal
+              - cell "$120k" [ref=e110]
+              - cell "$60k" [ref=e111]
+            - row "Globex — Pilot Rollout Globex Inc Qualified $45k $11k" [ref=e112]:
+              - cell "Globex — Pilot Rollout Globex Inc" [ref=e113]:
+                - text: Globex — Pilot Rollout
+                - generic [ref=e114]: Globex Inc
+              - cell "Qualified" [ref=e115]:
+                - generic [ref=e116]: Qualified
+              - cell "$45k" [ref=e117]
+              - cell "$11k" [ref=e118]
+            - row "Initech — Annual Renewal Initech LLC Negotiation $28k $21k" [ref=e119]:
+              - cell "Initech — Annual Renewal Initech LLC" [ref=e120]:
+                - text: Initech — Annual Renewal
+                - generic [ref=e121]: Initech LLC
+              - cell "Negotiation" [ref=e122]:
+                - generic [ref=e123]: Negotiation
+              - cell "$28k" [ref=e124]
+              - cell "$21k" [ref=e125]
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - heading "Activity feed" [level=3] [ref=e128]
+          - generic [ref=e129] [cursor=pointer]: All →
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - generic [ref=e133]: ✅
+            - generic [ref=e134]:
+              - generic [ref=e135]: Send renewal quote
+              - generic [ref=e136]: 2026-06-20 · Mary Lee · Initech LLC
+          - generic [ref=e137]:
+            - generic [ref=e138]: ✉️
+            - generic [ref=e139]:
+              - generic [ref=e140]: Sent proposal
+              - generic [ref=e141]: 2026-06-19 · Jane Doe · Acme Corp
+          - generic [ref=e142]:
+            - generic [ref=e143]: 🗓️
+            - generic [ref=e144]:
+              - generic [ref=e145]: Pilot kickoff
+              - generic [ref=e146]: 2026-06-17 · John Smith · Globex Inc
+          - generic [ref=e147]:
+            - generic [ref=e148]: 📝
+            - generic [ref=e149]:
+              - generic [ref=e150]: Deal closed
+              - generic [ref=e151]: 2026-06-16 · Sam Park · Acme Corp
+          - generic [ref=e152]:
+            - generic [ref=e153]: 📞
+            - generic [ref=e154]:
+              - generic [ref=e155]: Discovery call
+              - generic [ref=e156]: 2026-06-15 · Jane Doe · Acme Corp

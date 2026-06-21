@@ -1,0 +1,80 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]: C
+      - generic [ref=e18]: Convergence CRM
+      - generic [ref=e21]: Live · Supabase
+    - generic [ref=e22]:
+      - navigation [ref=e23]:
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: ▦
+          - text: Dashboard
+        - generic [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: ◉
+          - text: Contacts
+        - generic [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: ▥
+          - text: Pipeline
+        - generic [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: $
+          - text: Deals
+        - generic [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: ≋
+          - text: Activities
+      - main [ref=e34]:
+        - generic [ref=e116]:
+          - heading "Contacts" [level=2] [ref=e117]
+          - textbox "Search contacts…" [ref=e118]
+          - button "+ New contact" [ref=e119] [cursor=pointer]
+        - table [ref=e121]:
+          - rowgroup [ref=e122]:
+            - row "Name Company Title Email" [ref=e123]:
+              - columnheader "Name" [ref=e124]
+              - columnheader "Company" [ref=e125]
+              - columnheader "Title" [ref=e126]
+              - columnheader "Email" [ref=e127]
+          - rowgroup [ref=e128]:
+            - row "Dana Whitfield Northwind Security CISO dana@northwind.io" [ref=e129] [cursor=pointer]:
+              - cell "Dana Whitfield" [ref=e130]
+              - cell "Northwind Security" [ref=e131]
+              - cell "CISO" [ref=e132]
+              - cell "dana@northwind.io" [ref=e133]
+            - row "Dr. Elena Ross Cedar Health Systems CMIO elena@cedarhealth.org" [ref=e134] [cursor=pointer]:
+              - cell "Dr. Elena Ross" [ref=e135]
+              - cell "Cedar Health Systems" [ref=e136]
+              - cell "CMIO" [ref=e137]
+              - cell "elena@cedarhealth.org" [ref=e138]
+            - row "Grace Holloway Brightline Media Head of Ops grace@brightline.media" [ref=e139] [cursor=pointer]:
+              - cell "Grace Holloway" [ref=e140]
+              - cell "Brightline Media" [ref=e141]
+              - cell "Head of Ops" [ref=e142]
+              - cell "grace@brightline.media" [ref=e143]
+            - row "Marcus Lin Northwind Security SecOps Lead marcus@northwind.io" [ref=e144] [cursor=pointer]:
+              - cell "Marcus Lin" [ref=e145]
+              - cell "Northwind Security" [ref=e146]
+              - cell "SecOps Lead" [ref=e147]
+              - cell "marcus@northwind.io" [ref=e148]
+            - row "Priya Nair Helios Fintech VP Engineering priya@heliosfintech.com" [ref=e149] [cursor=pointer]:
+              - cell "Priya Nair" [ref=e150]
+              - cell "Helios Fintech" [ref=e151]
+              - cell "VP Engineering" [ref=e152]
+              - cell "priya@heliosfintech.com" [ref=e153]
+            - row "Sam Okafor Atlas Logistics COO sam@atlaslogistics.com" [ref=e154] [cursor=pointer]:
+              - cell "Sam Okafor" [ref=e155]
+              - cell "Atlas Logistics" [ref=e156]
+              - cell "COO" [ref=e157]
+              - cell "sam@atlaslogistics.com" [ref=e158]
+            - row "Tom Becker Helios Fintech Procurement tom@heliosfintech.com" [ref=e159] [cursor=pointer]:
+              - cell "Tom Becker" [ref=e160]
+              - cell "Helios Fintech" [ref=e161]
+              - cell "Procurement" [ref=e162]
+              - cell "tom@heliosfintech.com" [ref=e163]
+            - row "Yuki Tanaka Quanta Robotics VP Engineering yuki@quanta.ai" [ref=e164] [cursor=pointer]:
+              - cell "Yuki Tanaka" [ref=e165]
+              - cell "Quanta Robotics" [ref=e166]
+              - cell "VP Engineering" [ref=e167]
+              - cell "yuki@quanta.ai" [ref=e168]
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Detail" [level=3] [ref=e12]
+      - button "×" [ref=e13] [cursor=pointer]

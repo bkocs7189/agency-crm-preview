@@ -1,0 +1,44 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - text: Omni CRM
+        - generic [ref=e5]: Internal sales suite
+      - generic [ref=e6] [cursor=pointer]:
+        - generic [ref=e7]: ▦
+        - generic [ref=e8]: Dashboard
+      - generic [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: 👤
+        - generic [ref=e11]: Contacts
+      - generic [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: 🏢
+        - generic [ref=e14]: Companies
+      - generic [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: ▤
+        - generic [ref=e17]: Pipeline
+      - generic [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: ＄
+        - generic [ref=e20]: Deals
+      - generic [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: ⌁
+        - generic [ref=e23]: Activities
+      - generic [ref=e25]:
+        - generic [ref=e26]: Owner scope
+        - combobox [ref=e27]
+      - generic [ref=e28]:
+        - button [ref=e29] [cursor=pointer]
+        - button "Export JSON" [ref=e30] [cursor=pointer]
+        - generic [ref=e31]: ● Connecting…
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - textbox "🔍 Search people, companies, deals…" [ref=e35]:
+          - /placeholder: 🔍  Search people, companies, deals…
+        - button "+ New ▾" [ref=e37] [cursor=pointer]
+      - main [ref=e38]
+  - generic [ref=e41]:
+    - heading "Omni CRM" [level=1] [ref=e42]
+    - paragraph [ref=e43]: Internal sales suite · board access
+    - generic [ref=e44]: Access code
+    - textbox "XXXX-XXXX" [active] [ref=e45]
+    - button "Enter" [ref=e46] [cursor=pointer]
+    - paragraph [ref=e47]: Shared board gate · authorized users only
