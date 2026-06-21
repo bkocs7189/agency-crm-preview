@@ -1,0 +1,11 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: C
+    - heading "Convergence CRM" [level=1] [ref=e5]
+    - paragraph [ref=e6]: Enter the board access code
+    - textbox "Access code" [ref=e7]
+    - button "Unlock" [ref=e9] [cursor=pointer]
+  - complementary [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Detail" [level=3] [ref=e12]
+      - button "×" [ref=e13] [cursor=pointer]

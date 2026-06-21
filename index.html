@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Agency CRM — Contacts · Pipeline · Deals · Activities</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#171d26; --panel2:#1d2530; --line:#2a323f;
+    --txt:#e6edf3; --muted:#8b97a7; --accent:#4f7cff; --accent2:#6c5ce7;
+    --green:#2ecc71; --red:#ff5c5c; --amber:#f5a623; --chip:#222b38;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+  a{color:var(--accent)}
+  .app{display:flex;min-height:100vh}
+  .side{width:220px;background:var(--panel);border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+  .brand{font-weight:700;font-size:17px;padding:6px 10px 14px;letter-spacing:.3px}
+  .brand small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:3px}
+  .nav{display:block;padding:10px 12px;border-radius:9px;color:var(--muted);cursor:pointer;text-decoration:none;font-weight:600}
+  .nav:hover{background:var(--panel2);color:var(--txt)}
+  .nav.active{background:var(--accent);color:#fff}
+  .nav .c{float:right;background:rgba(255,255,255,.15);border-radius:20px;padding:0 8px;font-size:11px;font-weight:700}
+  .side .foot{margin-top:auto;display:flex;flex-direction:column;gap:6px}
+  .btn{background:var(--accent);color:#fff;border:0;padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:600;font-size:13px}
+  .btn.sec{background:var(--panel2);border:1px solid var(--line);color:var(--txt)}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .btn.danger{background:var(--red)}
+  .main{flex:1;padding:26px 32px;max-width:1600px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 22px}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .card .big{font-size:28px;font-weight:700}
+  .card .meta{color:var(--muted);font-size:12px;margin-top:6px}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .between{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel2)}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+  .pill.green{background:rgba(46,204,113,.15);color:var(--green)}
+  .pill.red{background:rgba(255,92,92,.15);color:var(--red)}
+  .pill.amber{background:rgba(245,166,35,.15);color:var(--amber)}
+  .pill.blue{background:rgba(79,124,255,.15);color:var(--accent)}
+  .pill.violet{background:rgba(108,92,231,.18);color:#a99bf0}
+  .pill.grey{background:var(--chip);color:var(--muted)}
+  .muted{color:var(--muted)}
+  .bar{height:7px;background:var(--panel2);border-radius:20px;overflow:hidden;min-width:90px}
+  .bar > i{display:block;height:100%;background:var(--accent)}
+  input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:9px 10px;border-radius:8px;font-size:13px;width:100%;font-family:inherit}
+  input[type=checkbox]{width:auto}
+  label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px;font-weight:600}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:60px 16px;overflow:auto;z-index:50}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;width:600px;max-width:100%}
+  .modal h2{margin:0 0 16px;font-size:18px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .fgrid .full{grid-column:1/3}
+  .ms-row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+  .ms-row input[type=text]{flex:1}
+  .tag{font-size:11px;background:var(--chip);color:var(--muted);padding:2px 8px;border-radius:6px;display:inline-block;margin:1px 2px}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  .iconbtn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 6px}
+  .iconbtn:hover{color:var(--txt)}
+  .done-txt{text-decoration:line-through;color:var(--muted)}
+  .seg{display:flex;gap:6px}
+  .seg button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600}
+  .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .search{max-width:280px}
+  /* kanban */
+  .kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);min-width:240px;flex:1;display:flex;flex-direction:column}
+  .col-h{padding:11px 13px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .col-h .sum{color:var(--muted);font-size:11px;font-weight:600}
+  .col-b{padding:10px;display:flex;flex-direction:column;gap:9px;min-height:60px;flex:1}
+  .col-b.drag{outline:2px dashed var(--accent);outline-offset:-6px;border-radius:10px}
+  .deal{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px;cursor:grab}
+  .deal:active{cursor:grabbing}
+  .deal .t{font-weight:700;font-size:13px;margin-bottom:4px}
+  .deal .m{color:var(--muted);font-size:11px}
+  .deal .v{font-weight:700;font-variant-numeric:tabular-nums;margin-top:6px}
+  .feed{display:flex;flex-direction:column;gap:0}
+  .fi{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .fi:last-child{border-bottom:0}
+  .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--panel2)}
+  .av{width:26px;height:26px;border-radius:50%;background:var(--accent2);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">Agency CRM<small>Contacts · Pipeline · Deals</small></div>
+    <a class="nav" data-view="dashboard">Dashboard</a>
+    <a class="nav" data-view="contacts">Contacts <span class="c" id="c-contacts"></span></a>
+    <a class="nav" data-view="pipeline">Pipeline <span class="c" id="c-deals"></span></a>
+    <a class="nav" data-view="activities">Activities <span class="c" id="c-acts"></span></a>
+    <div class="foot">
+      <button class="btn sec sm" onclick="exportData()">Export JSON</button>
+      <button class="btn sec sm" onclick="document.getElementById('imp').click()">Import JSON</button>
+      <input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(event)"/>
+      <div id="syncstatus" style="margin-top:8px;font-size:11px;font-weight:600;color:#d97706">● Connecting…</div>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.2/dist/umd/supabase.js" integrity="sha384-nD3dwv4+ZqdYnmZKe/249ImlV04om7xTCcsoSeQYI+RO+XlKPoqAWaJR1M5SJH9p" crossorigin="anonymous"></script>
+<script>
+/* Owner roster — sales/ops agents available as deal & activity owners */
+let PEOPLE = ["Company","VP of Sales","Account Strategist","Deal Strategist","Outbound Strategist","Sales Engineer","Sales Coach","Pipeline Analyst","Proposal Strategist","Support Responder","Chief of Staff","CEO","COO"];
+
+const STAGES = [
+  {key:"lead",        label:"Lead",        cls:"grey"},
+  {key:"qualified",   label:"Qualified",   cls:"blue"},
+  {key:"proposal",    label:"Proposal",    cls:"violet"},
+  {key:"negotiation", label:"Negotiation", cls:"amber"},
+  {key:"won",         label:"Won",         cls:"green"},
+  {key:"lost",        label:"Lost",        cls:"red"}
+];
+const ACT_ICON = {call:"📞", email:"✉️", meeting:"🗓️", note:"📝"};
+
+const SEED = {companies:[],people:[],deals:[],activities:[]};
+const KEY = "agency-crm-v1"; // local cache used as offline fallback only
+
+/* ================= SHARED BACKEND (Supabase) =================
+   Same stack/posture as EOS Tracker: one shared Postgres store so the whole
+   board sees one live dataset. In-memory DB is camelCase; mappers translate to
+   snake_case columns. Optimistic in-memory mutate -> background upsert + delete
+   of rows no longer present (last-writer-wins per collection — fine for a small
+   board tool). Falls back to localStorage if the backend is unreachable. */
+const SB_URL = "https://krthbgtykwamxqvapxnx.supabase.co";
+const SB_KEY = "sb_publishable_ToA4drk8mWPKiG6RsxRGyA_GC7iXSqf"; // publishable key only identifies the project; board entry is gated by the shared access code
+const TABLES = { companies:"crm_companies", people:"crm_people", deals:"crm_deals", activities:"crm_activities" };
+const COLLECTIONS = ["companies","people","deals","activities"];
+let sb = null, ONLINE = false;
+try { sb = window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false } }); } catch(e){ sb = null; }
+
+const MAP = {
+  companies:{
+    toRow:o=>({id:o.id,name:o.name,domain:o.domain,industry:o.industry,tags:o.tags||[],notes:o.notes,owner:o.owner,created_at:o.createdAt}),
+    toObj:r=>({id:r.id,name:r.name,domain:r.domain,industry:r.industry,tags:r.tags||[],notes:r.notes,owner:r.owner,createdAt:r.created_at})
+  },
+  people:{
+    toRow:o=>({id:o.id,name:o.name,email:o.email,phone:o.phone,title:o.title,company_id:o.companyId,tags:o.tags||[],custom_fields:o.customFields||[],notes:o.notes,owner:o.owner,created_at:o.createdAt}),
+    toObj:r=>({id:r.id,name:r.name,email:r.email,phone:r.phone,title:r.title,companyId:r.company_id,tags:r.tags||[],customFields:r.custom_fields||[],notes:r.notes,owner:r.owner,createdAt:r.created_at})
+  },
+  deals:{
+    toRow:o=>({id:o.id,title:o.title,company_id:o.companyId,contact_id:o.contactId,value:o.value||0,stage:o.stage,probability:o.probability||0,close_date:o.closeDate,owner:o.owner,notes:o.notes,created_at:o.createdAt}),
+    toObj:r=>({id:r.id,title:r.title,companyId:r.company_id,contactId:r.contact_id,value:+r.value||0,stage:r.stage,probability:r.probability||0,closeDate:r.close_date,owner:r.owner,notes:r.notes,createdAt:r.created_at})
+  },
+  activities:{
+    toRow:o=>({id:o.id,type:o.type,subject:o.subject,notes:o.notes,contact_id:o.contactId,deal_id:o.dealId,owner:o.owner,date:o.date,done:!!o.done,created_at:o.createdAt}),
+    toObj:r=>({id:r.id,type:r.type,subject:r.subject,notes:r.notes,contactId:r.contact_id,dealId:r.deal_id,owner:r.owner,date:r.date,done:!!r.done,createdAt:r.created_at})
+  }
+};
+
+function setStatus(txt, ok){ const el=document.getElementById("syncstatus"); if(el){ el.textContent=txt; el.style.color = ok?"#16a34a":"#d97706"; } }
+function localLoad(){ try{ const r=localStorage.getItem(KEY); if(r) return JSON.parse(r);}catch(e){} return JSON.parse(JSON.stringify(SEED)); }
+function localSave(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){} }
+
+async function cloudLoad(){
+  if(!sb) throw new Error("supabase client unavailable");
+  const out={};
+  for(const c of COLLECTIONS){
+    const { data, error } = await sb.from(TABLES[c]).select("*");
+    if(error) throw error;
+    out[c]=(data||[]).map(MAP[c].toObj);
+  }
+  return out;
+}
+
+let _syncing=false,_resync=false;
+async function cloudSaveAll(){
+  if(!sb){ localSave(); return; }
+  if(_syncing){ _resync=true; return; }
+  _syncing=true; setStatus("● Saving…", true);
+  try{
+    for(const c of COLLECTIONS){
+      const rows=DB[c].map(MAP[c].toRow);
+      if(rows.length){ const { error }=await sb.from(TABLES[c]).upsert(rows); if(error) throw error; }
+      let del=sb.from(TABLES[c]).delete();
+      del = rows.length ? del.not("id","in","("+DB[c].map(x=>'"'+String(x.id).replace(/"/g,'')+'"').join(",")+")")
+                        : del.neq("id","__never__");
+      const { error:e2 }=await del; if(e2) throw e2;
+    }
+    localSave(); ONLINE=true; setStatus("● Live · shared", true);
+  }catch(e){
+    ONLINE=false; setStatus("● Offline · saved locally", false); localSave(); console.error("CRM sync failed:", e);
+  }finally{
+    _syncing=false; if(_resync){ _resync=false; cloudSaveAll(); }
+  }
+}
+function save(){ renderCounts(); cloudSaveAll(); }
+
+let DB = JSON.parse(JSON.stringify(SEED));
+let VIEW = "dashboard";
+
+async function init(){
+  setStatus("● Connecting…", true);
+  try{ DB=await cloudLoad(); ONLINE=true; setStatus("● Live · shared", true); localSave(); }
+  catch(e){ DB=localLoad(); ONLINE=false; setStatus("● Offline · local only", false); console.error("CRM cloud load failed:", e); }
+  renderCounts(); go("dashboard");
+}
+
+/* ---------- helpers ---------- */
+function uid(p){ return p+"-"+Math.random().toString(36).slice(2,8); }
+function esc(s){ return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function money(n){ n=+n||0; return "$"+n.toLocaleString("en-US"); }
+function moneyK(n){ n=+n||0; return n>=1000 ? "$"+Math.round(n/1000)+"k" : "$"+n; }
+function ownerSelect(name,val){ return `<select name="${name}">`+PEOPLE.map(p=>`<option ${p===val?"selected":""}>${esc(p)}</option>`).join("")+`</select>`; }
+function company(id){ return DB.companies.find(c=>c.id===id); }
+function person(id){ return DB.people.find(p=>p.id===id); }
+function deal(id){ return DB.deals.find(d=>d.id===id); }
+function companyName(id){ const c=company(id); return c?c.name:"—"; }
+function personName(id){ const p=person(id); return p?p.name:"—"; }
+function dealName(id){ const d=deal(id); return d?d.title:"—"; }
+function stageMeta(k){ return STAGES.find(s=>s.key===k)||STAGES[0]; }
+function stagePill(k){ const s=stageMeta(k); return `<span class="pill ${s.cls}">${s.label}</span>`; }
+function initials(n){ return (n||"?").split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase(); }
+function companyOptions(val){ return `<option value="">— none —</option>`+DB.companies.map(c=>`<option value="${c.id}" ${c.id===val?"selected":""}>${esc(c.name)}</option>`).join(""); }
+function contactOptions(val){ return `<option value="">— none —</option>`+DB.people.map(p=>`<option value="${p.id}" ${p.id===val?"selected":""}>${esc(p.name)}${p.companyId?(" · "+esc(companyName(p.companyId))):""}</option>`).join(""); }
+function dealOptions(val){ return `<option value="">— none —</option>`+DB.deals.map(d=>`<option value="${d.id}" ${d.id===val?"selected":""}>${esc(d.title)}</option>`).join(""); }
+function tagsHtml(arr){ return (arr||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join(""); }
+
+function renderCounts(){
+  const open=DB.deals.filter(d=>d.stage!=="won"&&d.stage!=="lost").length;
+  document.getElementById("c-contacts").textContent=DB.people.length;
+  document.getElementById("c-deals").textContent=open;
+  document.getElementById("c-acts").textContent=DB.activities.filter(a=>!a.done).length;
+}
+
+/* ---------- modal / nav ---------- */
+function openModal(html){ const m=document.getElementById("modal"); m.innerHTML=html; document.getElementById("modal-bg").classList.add("show"); }
+function closeModal(){ document.getElementById("modal-bg").classList.remove("show"); }
+document.getElementById("modal-bg").addEventListener("click",e=>{ if(e.target.id==="modal-bg") closeModal(); });
+function go(v){ VIEW=v; document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===v)); render(); }
+document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>go(n.dataset.view)));
+
+/* ================= DASHBOARD ================= */
+function viewDashboard(){
+  const open=DB.deals.filter(d=>d.stage!=="won"&&d.stage!=="lost");
+  const won=DB.deals.filter(d=>d.stage==="won");
+  const openVal=open.reduce((s,d)=>s+(+d.value||0),0);
+  const wonVal=won.reduce((s,d)=>s+(+d.value||0),0);
+  const weighted=open.reduce((s,d)=>s+(+d.value||0)*(d.probability||0)/100,0);
+  // pipeline by stage
+  const byStage=STAGES.filter(s=>s.key!=="won"&&s.key!=="lost").map(s=>{
+    const ds=DB.deals.filter(d=>d.stage===s.key); const v=ds.reduce((a,d)=>a+(+d.value||0),0);
+    return {s, n:ds.length, v};
+  });
+  const maxV=Math.max(...byStage.map(x=>x.v),1);
+  // leaderboard
+  const board={};
+  DB.deals.forEach(d=>{ const o=d.owner||"—"; board[o]=board[o]||{owner:o,won:0,wonVal:0,open:0,openVal:0}; if(d.stage==="won"){board[o].won++;board[o].wonVal+=+d.value||0;} else if(d.stage!=="lost"){board[o].open++;board[o].openVal+=+d.value||0;} });
+  const lead=Object.values(board).sort((a,b)=>b.wonVal-a.wonVal||b.openVal-a.openVal).slice(0,6);
+  // activity feed
+  const feed=[...DB.activities].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
+  return `
+  <h1>Dashboard</h1>
+  <p class="sub">Sales pipeline health — ${new Date().toISOString().slice(0,10)}</p>
+  <div class="grid cards">
+    <div class="card"><h3>Open pipeline</h3><div class="big">${moneyK(openVal)}</div><div class="meta">${open.length} open deals</div></div>
+    <div class="card"><h3>Weighted forecast</h3><div class="big">${moneyK(weighted)}</div><div class="meta">by probability</div></div>
+    <div class="card"><h3>Won (total)</h3><div class="big">${moneyK(wonVal)}</div><div class="meta">${won.length} closed-won</div></div>
+    <div class="card"><h3>Contacts</h3><div class="big">${DB.people.length}</div><div class="meta">${DB.companies.length} companies</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-top:18px">
+    <div>
+      <div class="between"><h3 style="margin:0">Pipeline by stage</h3><a class="nav" style="display:inline;padding:4px 8px" onclick="go('pipeline')">Open pipeline →</a></div>
+      <table><thead><tr><th>Stage</th><th class="num">Deals</th><th>Value</th></tr></thead><tbody>
+      ${byStage.map(x=>`<tr><td>${stagePill(x.s.key)}</td><td class="num">${x.n}</td><td><div class="row"><div class="bar" style="flex:1"><i style="width:${x.v/maxV*100}%"></i></div><span class="num" style="min-width:54px">${moneyK(x.v)}</span></div></td></tr>`).join("")}
+      </tbody></table>
+      <div class="between" style="margin-top:20px"><h3 style="margin:0">Team leaderboard</h3></div>
+      <table><thead><tr><th>Owner</th><th class="num">Won</th><th class="num">Won $</th><th class="num">Open $</th></tr></thead><tbody>
+      ${lead.map(x=>`<tr><td><div class="row"><span class="av">${esc(initials(x.owner))}</span> ${esc(x.owner)}</div></td><td class="num">${x.won}</td><td class="num cell">${moneyK(x.wonVal)}</td><td class="num muted">${moneyK(x.openVal)}</td></tr>`).join("")||'<tr><td colspan=4 class=muted>No deals</td></tr>'}
+      </tbody></table>
+    </div>
+    <div>
+      <div class="between"><h3 style="margin:0">Activity feed</h3><a class="nav" style="display:inline;padding:4px 8px" onclick="go('activities')">All →</a></div>
+      <div class="card"><div class="feed">
+      ${feed.map(a=>`<div class="fi"><div class="ico">${ACT_ICON[a.type]||"•"}</div><div style="flex:1"><div style="font-weight:600">${esc(a.subject)}</div><div class="muted" style="font-size:12px">${esc(a.date||"")} · ${esc(a.owner||"")}${a.contactId?(" · "+esc(personName(a.contactId))):""}</div></div></div>`).join("")||'<div class="muted">No activity yet</div>'}
+      </div></div>
+    </div>
+  </div>`;
+}
+
+/* ================= CONTACTS (people + companies) ================= */
+let contactTab="people", contactQ="";
+function viewContacts(){
+  const seg=`<div class="seg">
+    <button class="${contactTab==='people'?'on':''}" onclick="contactTab='people';render()">People</button>
+    <button class="${contactTab==='companies'?'on':''}" onclick="contactTab='companies';render()">Companies</button></div>`;
+  const search=`<input class="search" placeholder="Search…" value="${esc(contactQ)}" oninput="contactQ=this.value;render();const e=document.querySelector('.search');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length);}">`;
+  if(contactTab==="people"){
+    const q=contactQ.toLowerCase();
+    const list=DB.people.filter(p=>!q||[p.name,p.email,p.title,companyName(p.companyId),(p.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
+    const rows=list.map(p=>`<tr>
+      <td><div class="row"><span class="av">${esc(initials(p.name))}</span><div><b>${esc(p.name)}</b><div class="muted" style="font-size:12px">${esc(p.title||"")}</div></div></div></td>
+      <td>${esc(companyName(p.companyId))}</td>
+      <td class="muted">${esc(p.email||"")}<div style="font-size:12px">${esc(p.phone||"")}</div></td>
+      <td>${tagsHtml(p.tags)}</td>
+      <td class="muted">${esc(p.owner||"")}</td>
+      <td><button class="iconbtn" onclick="editPerson('${p.id}')">Edit</button><button class="iconbtn" onclick="delItem('people','${p.id}')">✕</button></td>
+    </tr>`).join("");
+    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · custom fields · tags · notes</p></div>
+      <div class="row">${search}${seg}<button class="btn" onclick="editPerson()">+ New Person</button></div></div>
+      <table><thead><tr><th>Name</th><th>Company</th><th>Contact</th><th>Tags</th><th>Owner</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan=6 class=empty>No people yet — add one.</td></tr>'}</tbody></table>`;
+  } else {
+    const q=contactQ.toLowerCase();
+    const list=DB.companies.filter(c=>!q||[c.name,c.industry,c.domain,(c.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
+    const rows=list.map(c=>{
+      const ppl=DB.people.filter(p=>p.companyId===c.id).length;
+      const dv=DB.deals.filter(d=>d.companyId===c.id&&d.stage!=="lost").reduce((s,d)=>s+(+d.value||0),0);
+      return `<tr>
+      <td><b>${esc(c.name)}</b><div class="muted" style="font-size:12px">${esc(c.domain||"")}</div></td>
+      <td>${esc(c.industry||"")}</td>
+      <td class="num">${ppl}</td>
+      <td class="num">${moneyK(dv)}</td>
+      <td>${tagsHtml(c.tags)}</td>
+      <td><button class="iconbtn" onclick="editCompany('${c.id}')">Edit</button><button class="iconbtn" onclick="delItem('companies','${c.id}')">✕</button></td>
+    </tr>`;}).join("");
+    return `<div class="between"><div><h1>Contacts</h1><p class="sub" style="margin:0">People &amp; companies · custom fields · tags · notes</p></div>
+      <div class="row">${search}${seg}<button class="btn" onclick="editCompany()">+ New Company</button></div></div>
+      <table><thead><tr><th>Company</th><th>Industry</th><th class="num">People</th><th class="num">Pipeline</th><th>Tags</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan=6 class=empty>No companies yet — add one.</td></tr>'}</tbody></table>`;
+  }
+}
+function cfRow(cf){ return `<div class="ms-row"><input type=text class="cfk" value="${esc(cf.k||"")}" placeholder="field"><input type=text class="cfv" value="${esc(cf.v||"")}" placeholder="value"><button type=button class="iconbtn" onclick="this.parentNode.remove()">✕</button></div>`; }
+function addCf(){ const w=document.getElementById("cf-wrap"); const d=document.createElement("div"); d.innerHTML=cfRow({}); w.appendChild(d.firstChild); }
+function editPerson(id){
+  const p=id?person(id):{name:"",email:"",phone:"",title:"",companyId:"",tags:[],customFields:[],notes:"",owner:"VP of Sales"};
+  const cf=(p.customFields||[]).map(cfRow).join("");
+  openModal(`<h2>${id?"Edit":"New"} Person</h2><form onsubmit="savePerson(event,'${id||""}')">
+    <div class="fgrid">
+      <div><label>Name</label><input name="name" required value="${esc(p.name)}"></div>
+      <div><label>Title</label><input name="title" value="${esc(p.title)}"></div>
+      <div><label>Email</label><input name="email" type="email" value="${esc(p.email)}"></div>
+      <div><label>Phone</label><input name="phone" value="${esc(p.phone)}"></div>
+      <div><label>Company</label><select name="companyId">${companyOptions(p.companyId)}</select></div>
+      <div><label>Owner</label>${ownerSelect("owner",p.owner)}</div>
+      <div class="full"><label>Tags (comma separated)</label><input name="tags" value="${esc((p.tags||[]).join(", "))}"></div>
+      <div class="full"><label>Custom fields</label><div id="cf-wrap">${cf}</div><button type="button" class="btn sec sm" onclick="addCf()">+ field</button></div>
+      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(p.notes)}</textarea></div>
+    </div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
+  </form>`);
+}
+function savePerson(e,id){ e.preventDefault(); const f=e.target;
+  const tags=f.tags.value.split(",").map(s=>s.trim()).filter(Boolean);
+  const customFields=[...f.querySelectorAll("#cf-wrap .ms-row")].map(r=>({k:r.querySelector(".cfk").value.trim(),v:r.querySelector(".cfv").value.trim()})).filter(c=>c.k);
+  const obj={name:f.name.value,title:f.title.value,email:f.email.value,phone:f.phone.value,companyId:f.companyId.value,owner:f.owner.value,tags,customFields,notes:f.notes.value};
+  if(id){ Object.assign(person(id),obj);} else { obj.id=uid("pe"); obj.createdAt=new Date().toISOString().slice(0,10); DB.people.push(obj);} save(); closeModal(); render();
+}
+function editCompany(id){
+  const c=id?company(id):{name:"",domain:"",industry:"",tags:[],notes:"",owner:"VP of Sales"};
+  openModal(`<h2>${id?"Edit":"New"} Company</h2><form onsubmit="saveCompany(event,'${id||""}')">
+    <div class="fgrid">
+      <div><label>Name</label><input name="name" required value="${esc(c.name)}"></div>
+      <div><label>Domain</label><input name="domain" value="${esc(c.domain)}"></div>
+      <div><label>Industry</label><input name="industry" value="${esc(c.industry)}"></div>
+      <div><label>Owner</label>${ownerSelect("owner",c.owner)}</div>
+      <div class="full"><label>Tags (comma separated)</label><input name="tags" value="${esc((c.tags||[]).join(", "))}"></div>
+      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(c.notes)}</textarea></div>
+    </div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
+  </form>`);
+}
+function saveCompany(e,id){ e.preventDefault(); const f=e.target;
+  const tags=f.tags.value.split(",").map(s=>s.trim()).filter(Boolean);
+  const obj={name:f.name.value,domain:f.domain.value,industry:f.industry.value,owner:f.owner.value,tags,notes:f.notes.value};
+  if(id){ Object.assign(company(id),obj);} else { obj.id=uid("co"); obj.createdAt=new Date().toISOString().slice(0,10); DB.companies.push(obj);} save(); closeModal(); render();
+}
+
+/* ================= PIPELINE / DEALS ================= */
+let pipeView="kanban", pipOwner="all";
+function viewPipeline(){
+  const owners=["all",...Array.from(new Set(DB.deals.map(d=>d.owner).filter(Boolean)))];
+  const ownerSeg=`<select style="width:auto" onchange="pipOwner=this.value;render()">${owners.map(o=>`<option value="${esc(o)}" ${o===pipOwner?"selected":""}>${o==="all"?"All owners":esc(o)}</option>`).join("")}</select>`;
+  const seg=`<div class="seg">
+    <button class="${pipView==='kanban'?'on':''}" onclick="pipView='kanban';render()">Kanban</button>
+    <button class="${pipView==='list'?'on':''}" onclick="pipView='list';render()">List</button></div>`;
+  const head=`<div class="between"><div><h1>Pipeline</h1><p class="sub" style="margin:0">Deals &amp; opportunities · drag cards to change stage</p></div>
+    <div class="row">${ownerSeg}${seg}<button class="btn" onclick="editDeal()">+ New Deal</button></div></div>`;
+  const ds=DB.deals.filter(d=>pipOwner==="all"||d.owner===pipOwner);
+  if(pipView==="kanban"){
+    const cols=STAGES.map(s=>{
+      const items=ds.filter(d=>d.stage===s.key);
+      const v=items.reduce((a,d)=>a+(+d.value||0),0);
+      const cards=items.map(d=>`<div class="deal" draggable="true" ondragstart="dragDeal(event,'${d.id}')" onclick="editDeal('${d.id}')">
+        <div class="t">${esc(d.title)}</div>
+        <div class="m">${esc(companyName(d.companyId))}${d.contactId?(" · "+esc(personName(d.contactId))):""}</div>
+        <div class="row" style="justify-content:space-between;margin-top:6px"><span class="v">${moneyK(d.value)}</span><span class="tag">${d.probability||0}%</span></div>
+        <div class="m" style="margin-top:5px">${esc(d.owner||"")} · ${esc(d.closeDate||"no date")}</div>
+      </div>`).join("");
+      return `<div class="col"><div class="col-h"><span>${s.label} <span class="muted">(${items.length})</span></span><span class="sum">${moneyK(v)}</span></div>
+        <div class="col-b" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropDeal(event,'${s.key}')">${cards||'<div class="muted" style="font-size:12px;padding:6px">—</div>'}</div></div>`;
+    }).join("");
+    return head+`<div class="kanban">${cols}</div>`;
+  } else {
+    const order={lead:0,qualified:1,proposal:2,negotiation:3,won:4,lost:5};
+    const list=[...ds].sort((a,b)=>(order[a.stage]??0)-(order[b.stage]??0)||(+b.value||0)-(+a.value||0));
+    const rows=list.map(d=>`<tr>
+      <td><b>${esc(d.title)}</b><div class="muted" style="font-size:12px">${esc(companyName(d.companyId))}${d.contactId?(" · "+esc(personName(d.contactId))):""}</div></td>
+      <td>${stagePill(d.stage)}</td>
+      <td class="num">${money(d.value)}</td>
+      <td class="num">${d.probability||0}%</td>
+      <td class="muted">${esc(d.closeDate||"")}</td>
+      <td class="muted">${esc(d.owner||"")}</td>
+      <td><button class="iconbtn" onclick="editDeal('${d.id}')">Edit</button><button class="iconbtn" onclick="delItem('deals','${d.id}')">✕</button></td>
+    </tr>`).join("");
+    return head+`<table><thead><tr><th>Deal</th><th>Stage</th><th class="num">Value</th><th class="num">Prob.</th><th>Close</th><th>Owner</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan=7 class=empty>No deals yet — add one.</td></tr>'}</tbody></table>`;
+  }
+}
+let _dragId=null;
+function dragDeal(e,id){ _dragId=id; e.dataTransfer.effectAllowed="move"; }
+function dragOver(e){ e.preventDefault(); e.currentTarget.classList.add("drag"); }
+function dragLeave(e){ e.currentTarget.classList.remove("drag"); }
+function dropDeal(e,stage){ e.preventDefault(); e.currentTarget.classList.remove("drag"); if(!_dragId) return; const d=deal(_dragId); if(d&&d.stage!==stage){ d.stage=stage; if(stage==="won")d.probability=100; if(stage==="lost")d.probability=0; save(); } _dragId=null; render(); }
+function editDeal(id){
+  const d=id?deal(id):{title:"",companyId:"",contactId:"",value:0,stage:"lead",probability:20,closeDate:"",owner:"VP of Sales",notes:""};
+  openModal(`<h2>${id?"Edit":"New"} Deal</h2><form onsubmit="saveDeal(event,'${id||""}')">
+    <div class="fgrid">
+      <div class="full"><label>Title</label><input name="title" required value="${esc(d.title)}"></div>
+      <div><label>Company</label><select name="companyId">${companyOptions(d.companyId)}</select></div>
+      <div><label>Primary contact</label><select name="contactId">${contactOptions(d.contactId)}</select></div>
+      <div><label>Value ($)</label><input name="value" type="number" min="0" step="any" value="${d.value||0}"></div>
+      <div><label>Stage</label><select name="stage">${STAGES.map(s=>`<option value="${s.key}" ${s.key===d.stage?"selected":""}>${s.label}</option>`).join("")}</select></div>
+      <div><label>Probability (%)</label><input name="probability" type="number" min="0" max="100" value="${d.probability||0}"></div>
+      <div><label>Close date</label><input name="closeDate" type="date" value="${esc(d.closeDate)}"></div>
+      <div><label>Owner</label>${ownerSelect("owner",d.owner)}</div>
+      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(d.notes)}</textarea></div>
+    </div>
+    <div class="row" style="justify-content:space-between">
+      <div>${id?`<button type="button" class="btn sec sm" onclick="logForDeal('${id}')">+ Log activity</button>`:""}</div>
+      <div class="row"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
+    </div>
+  </form>`);
+}
+function saveDeal(e,id){ e.preventDefault(); const f=e.target;
+  const obj={title:f.title.value,companyId:f.companyId.value,contactId:f.contactId.value,value:+f.value.value||0,stage:f.stage.value,probability:+f.probability.value||0,closeDate:f.closeDate.value,owner:f.owner.value,notes:f.notes.value};
+  if(id){ Object.assign(deal(id),obj);} else { obj.id=uid("de"); obj.createdAt=new Date().toISOString().slice(0,10); DB.deals.push(obj);} save(); closeModal(); render();
+}
+function logForDeal(dealId){ const d=deal(dealId); closeModal(); editActivity(null,{dealId,contactId:d?d.contactId:"",owner:d?d.owner:"VP of Sales"}); }
+
+/* ================= ACTIVITIES ================= */
+let actFilter="all";
+function viewActivities(){
+  const seg=`<div class="seg">
+    ${["all","call","email","meeting","note","open"].map(k=>`<button class="${actFilter===k?'on':''}" onclick="actFilter='${k}';render()">${k[0].toUpperCase()+k.slice(1)}</button>`).join("")}</div>`;
+  let list=[...DB.activities];
+  if(actFilter==="open") list=list.filter(a=>!a.done); else if(actFilter!=="all") list=list.filter(a=>a.type===actFilter);
+  list.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const rows=list.map(a=>`<tr>
+    <td><input type=checkbox ${a.done?"checked":""} onchange="toggleAct('${a.id}')"></td>
+    <td><span class="tag">${ACT_ICON[a.type]||""} ${esc(a.type)}</span></td>
+    <td class="${a.done?'done-txt':''}"><b>${esc(a.subject)}</b>${a.notes?`<div class="muted" style="font-size:12px">${esc(a.notes)}</div>`:""}</td>
+    <td class="muted">${a.contactId?esc(personName(a.contactId)):""}${a.dealId?`<div style="font-size:12px">${esc(dealName(a.dealId))}</div>`:""}</td>
+    <td class="muted">${esc(a.owner||"")}</td>
+    <td class="muted">${esc(a.date||"")}</td>
+    <td><button class="iconbtn" onclick="editActivity('${a.id}')">Edit</button><button class="iconbtn" onclick="delItem('activities','${a.id}')">✕</button></td>
+  </tr>`).join("");
+  return `<div class="between"><div><h1>Activities</h1><p class="sub" style="margin:0">Calls · emails · meetings · notes logged against contacts &amp; deals</p></div>
+    <div class="row">${seg}<button class="btn" onclick="editActivity()">+ Log Activity</button></div></div>
+    <table><thead><tr><th></th><th>Type</th><th>Subject</th><th>Linked to</th><th>Owner</th><th>Date</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=7 class=empty>No activities yet — log one.</td></tr>'}</tbody></table>`;
+}
+function editActivity(id,pre){
+  const a=id?DB.activities.find(x=>x.id===id):Object.assign({type:"call",subject:"",notes:"",contactId:"",dealId:"",owner:"VP of Sales",date:new Date().toISOString().slice(0,10),done:false},pre||{});
+  openModal(`<h2>${id?"Edit":"Log"} Activity</h2><form onsubmit="saveActivity(event,'${id||""}')">
+    <div class="fgrid">
+      <div><label>Type</label><select name="type">${["call","email","meeting","note"].map(t=>`<option value="${t}" ${t===a.type?"selected":""}>${ACT_ICON[t]} ${t}</option>`).join("")}</select></div>
+      <div><label>Date</label><input name="date" type="date" value="${esc(a.date)}"></div>
+      <div class="full"><label>Subject</label><input name="subject" required value="${esc(a.subject)}"></div>
+      <div><label>Contact</label><select name="contactId">${contactOptions(a.contactId)}</select></div>
+      <div><label>Deal</label><select name="dealId">${dealOptions(a.dealId)}</select></div>
+      <div><label>Owner</label>${ownerSelect("owner",a.owner)}</div>
+      <div><label>Status</label><select name="done"><option value="false" ${!a.done?"selected":""}>Open / to-do</option><option value="true" ${a.done?"selected":""}>Done</option></select></div>
+      <div class="full"><label>Notes</label><textarea name="notes" rows="3">${esc(a.notes)}</textarea></div>
+    </div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn sec" onclick="closeModal()">Cancel</button><button class="btn">Save</button></div>
+  </form>`);
+}
+function saveActivity(e,id){ e.preventDefault(); const f=e.target;
+  const obj={type:f.type.value,subject:f.subject.value,notes:f.notes.value,contactId:f.contactId.value,dealId:f.dealId.value,owner:f.owner.value,date:f.date.value,done:f.done.value==="true"};
+  if(id){ Object.assign(DB.activities.find(x=>x.id===id),obj);} else { obj.id=uid("ac"); obj.createdAt=new Date().toISOString().slice(0,10); DB.activities.push(obj);} save(); closeModal(); render();
+}
+function toggleAct(id){ const a=DB.activities.find(x=>x.id===id); a.done=!a.done; save(); render(); }
+
+/* ---------- shared ---------- */
+function delItem(coll,id){ if(!confirm("Delete this item?")) return; DB[coll]=DB[coll].filter(x=>x.id!==id); save(); render(); }
+function exportData(){ const b=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="agency-crm-data.json"; a.click(); }
+function importData(e){ const fr=new FileReader(); fr.onload=()=>{ try{ DB=JSON.parse(fr.result); save(); render(); alert("Imported."); }catch(err){ alert("Invalid JSON"); } }; fr.readAsText(e.target.files[0]); }
+
+/* ---------- render ---------- */
+function render(){
+  const m=document.getElementById("main");
+  m.innerHTML = VIEW==="dashboard"?viewDashboard(): VIEW==="contacts"?viewContacts(): VIEW==="pipeline"?viewPipeline(): viewActivities();
+}
+
+/* ---------- board access gate (shared code, same pattern as EOS Tracker) ---------- */
+const _GATE_HASH = "9729c795ccedc0313505c4b4312d36b5f74032e0e2198114f033c5b233d2e6bc"; // SHA-256 of the board access code
+async function _sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function _showGate(){
+  const o=document.createElement("div");o.id="gate";
+  o.style.cssText="position:fixed;inset:0;z-index:99999;background:#0f1419;display:flex;align-items:center;justify-content:center";
+  o.innerHTML='<form id="gateForm" style="background:#171d26;border:1px solid #2a323f;border-radius:14px;padding:34px 32px;width:330px;box-shadow:0 18px 50px rgba(0,0,0,.45);font:15px system-ui,-apple-system,Segoe UI,sans-serif;color:#e6edf3">'+
+  '<h1 style="font-size:18px;margin:0 0 4px">Agency CRM</h1>'+
+  '<p style="color:#8b97a7;font-size:13px;margin:0 0 22px">Contacts · Pipeline · Deals &middot; board access</p>'+
+  '<p id="gateErr" style="color:#ff5c5c;margin:0 0 14px;display:none">Incorrect access code. Try again.</p>'+
+  '<label style="display:block;font-size:12px;color:#8b97a7;margin:0 0 6px">Access code</label>'+
+  '<input id="gateCode" autocomplete="off" autofocus placeholder="XXXX-XXXX" style="width:100%;box-sizing:border-box;background:#0f1419;border:1px solid #2a323f;border-radius:8px;color:#e6edf3;padding:11px 12px;font-size:15px;letter-spacing:1px">'+
+  '<button type="submit" style="width:100%;margin-top:16px;background:#4f7cff;border:0;border-radius:8px;color:#fff;padding:11px;font-size:15px;font-weight:600;cursor:pointer">Enter</button>'+
+  '<p style="color:#5b6573;font-size:11px;text-align:center;margin:18px 0 0">Shared board gate &middot; authorized users only</p></form>';
+  document.body.appendChild(o);
+  document.getElementById("gateForm").addEventListener("submit",async(e)=>{
+    e.preventDefault();
+    const v=document.getElementById("gateCode").value.trim().toUpperCase();
+    if(await _sha(v)===_GATE_HASH){sessionStorage.setItem("crm_gate","1");o.remove();init();}
+    else{document.getElementById("gateErr").style.display="block";}
+  });
+}
+if(sessionStorage.getItem("crm_gate")==="1"){init();}else{_showGate();}
+</script>
+</body>
+</html>
